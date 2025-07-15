@@ -1,0 +1,28 @@
+// {
+//   "compilerOptions": {
+//     "target": "es2016",
+//     "module": "commonjs",
+//     "outDir": "dist",
+//     "strict": true,
+//     "esModuleInterop": true,
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+
+//     "jsx": "react-jsx",          // ✅ Permite usar JSX (React 17+)
+//     "moduleResolution": "node",  // ✅ Ayuda a resolver imports TS/JSX correctamente
+//   },
+//   "include": ["src"]
+// }
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/main", "src/preload"]
+}
+

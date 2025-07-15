@@ -1,0 +1,39 @@
+# node
+node_modules/
+package-lock.json
+
+# builds
+dist/
+dist-renderer/
+build/
+
+# vite
+.vite/
+
+# system
+.DS_Store
+Thumbs.db
+
+# logs
+logs/
+*.log
+
+# Tailwind & PostCSS cache
+.postcssrc
+.tailwindrc
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.sw?
+
+# data generated at runtime
+/data/logs/
+data/cache/
+
+# compiled TS
+*.tsbuildinfo
+
+# environment
+.env
+.env.*
