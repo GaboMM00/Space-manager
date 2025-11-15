@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist/main",
+    "types": ["node", "better-sqlite3"]
+  },
+  "include": ["src/main/**/*", "src/preload/**/*", "src/shared/**/*", "src/modules/**/*"],
+  "exclude": ["src/renderer/**/*"]
+}

@@ -1,0 +1,40 @@
+appId: com.spacemanager.app
+productName: Space Manager
+copyright: Copyright © 2025 Space Manager Team
+
+directories:
+  buildResources: resources
+  output: dist-electron
+
+files:
+  - dist/**/*
+  - package.json
+
+mac:
+  category: public.app-category.productivity
+  icon: resources/icons/icon.icns
+  target:
+    - dmg
+    - zip
+  hardenedRuntime: true
+  gatekeeperAssess: false
+
+win:
+  icon: resources/icons/icon.ico
+  target:
+    - nsis
+    - portable
+
+linux:
+  icon: resources/icons
+  category: Utility
+  target:
+    - AppImage
+    - deb
+    - rpm
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false

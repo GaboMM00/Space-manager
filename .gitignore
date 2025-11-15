@@ -1,39 +1,60 @@
-# node
+# Dependencies
 node_modules/
 package-lock.json
 
-# builds
+# Build outputs
 dist/
+dist-electron/
 dist-renderer/
+out/
 build/
 
-# vite
+# Vite
 .vite/
 
-# system
+# Testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# System files
 .DS_Store
 Thumbs.db
 
-# logs
+# Logs
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Tailwind & PostCSS cache
+# Caches
+.cache/
 .postcssrc
 .tailwindrc
+*.tsbuildinfo
 
-# IDEs/Editors
+# IDEs and editors
 .vscode/
 .idea/
 *.sw?
+*.swp
+*~
 
-# data generated at runtime
-/data/logs/
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Runtime data
+data/logs/
 data/cache/
 
-# compiled TS
-*.tsbuildinfo
+# Husky
+.husky/_
 
-# environment
-.env
-.env.*
+# OS specific
+*.pid
+*.seed
+*.pid.lock
