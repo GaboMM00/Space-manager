@@ -1,28 +1,29 @@
-// {
-//   "compilerOptions": {
-//     "target": "es2016",
-//     "module": "commonjs",
-//     "outDir": "dist",
-//     "strict": true,
-//     "esModuleInterop": true,
-//     "skipLibCheck": true,
-//     "forceConsistentCasingInFileNames": true,
-
-//     "jsx": "react-jsx",          // ✅ Permite usar JSX (React 17+)
-//     "moduleResolution": "node",  // ✅ Ayuda a resolver imports TS/JSX correctamente
-//   },
-//   "include": ["src"]
-// }
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "ES2022",
     "module": "commonjs",
-    "outDir": "dist",
-    "strict": true,
+    "lib": ["ES2022"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@main/*": ["src/main/*"],
+      "@preload/*": ["src/preload/*"],
+      "@shared/*": ["src/shared/*"],
+      "@modules/*": ["src/modules/*"]
+    },
+    "types": ["node"]
   },
-  "include": ["src/main", "src/preload"]
+  "include": ["src/main/**/*", "src/preload/**/*", "src/shared/**/*", "src/modules/**/*"],
+  "exclude": ["node_modules", "dist", "out", "src/renderer/**/*"]
 }
-

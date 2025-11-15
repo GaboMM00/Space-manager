@@ -1,143 +1,162 @@
-# 📦 Gestor de Espacios - Ecosistema Modular de Productividad
+# 📦 Space Manager
 
-Bienvenido al repositorio del proyecto **Gestor de Espacios**, una aplicación modular construida con **Electron + Vite + React + TailwindCSS** y preparada para escalar con múltiples módulos (como tareas, analytics, plugins, etc). Esta app permite crear "espacios de trabajo" personalizados que encapsulan herramientas, aplicaciones y páginas necesarias para cada actividad.
+Sistema modular de gestión de espacios de trabajo digitales construido con Electron, React, TypeScript y TailwindCSS.
 
----
+## 🚀 Inicio Rápido
 
-## 🚀 Tecnologías principales
+### Requisitos Previos
 
-| Tecnología    | Rol                                     |
-| ------------- | --------------------------------------- |
-| Electron      | Aplicación de escritorio (runtime)      |
-| React         | Interfaz de usuario (frontend)          |
-| Vite          | Bundler de frontend                     |
-| TailwindCSS   | Estilado de componentes                 |
-| TypeScript    | Lenguaje principal (frontend y backend) |
-| electron-vite | Integración optimizada Vite + Electron  |
+- Node.js 20+
+- npm 9+
 
----
+### Instalación
 
-## 🧱 Estructura de Carpetas
+```bash
+# Instalar dependencias
+npm install
 
-```plaintext
-project-root/
-├── dist/                     # Archivos compilados (tsc)
-├── node_modules/             # Dependencias
+# Modo desarrollo
+npm run dev
+
+# Build de producción
+npm run build
+
+# Empaquetar aplicación
+npm run package
+```
+
+## 📖 Documentación
+
+Toda la documentación del proyecto está disponible en la carpeta `/docs`:
+
+- **[PROJECT_PLAN.md](./docs/PROJECT_PLAN.md)** - Plan maestro del proyecto
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Arquitectura completa del sistema
+- **[SRS_COMPLETE.md](./docs/SRS_COMPLETE.md)** - Especificación de requerimientos
+- **[DEVELOPMENT_GUIDE.md](./docs/DEVELOPMENT_GUIDE.md)** - Guía de desarrollo
+
+### Documentación SQLite Analytics
+
+- **[00_SQLITE_INDEX.md](./docs/00_SQLITE_INDEX.md)** - Índice de documentación SQLite
+- **[SQLITE_EXECUTIVE_SUMMARY.md](./docs/SQLITE_EXECUTIVE_SUMMARY.md)** - Resumen ejecutivo
+- **[SQLITE_QUICK_START.md](./docs/SQLITE_QUICK_START.md)** - Guía rápida
+- **[SQLITE_GUIDE.md](./docs/SQLITE_GUIDE.md)** - Guía completa
+
+## 🧱 Estructura del Proyecto
+
+```
+Space-manager/
+├── docs/                       # Documentación completa
 ├── src/
-│   ├── main/                 # Código principal de Electron (ventanas, procesos)
-│   │   └── main.ts
-│   ├── preload/              # Comunicación segura entre main y renderer
-│   │   └── preload.ts
-│   ├── renderer/             # Frontend (React + Tailwind)
-│   │   ├── App.tsx
-│   │   ├── main.tsx
-│   │   ├── index.html        # Entrada principal para Electron-Vite
-│   │   ├── index.css         # TailwindCSS base
-│   │   └── modules-ui/       # Interfaces específicas por módulo
-│   └── modules/              # Lógica funcional de los módulos (sin UI)
-│       ├── workspace/        # Lógica del módulo principal
-│       ├── tasks/            # Checklists y recordatorios
-│       ├── analytics/        # Métricas y seguimiento de uso
-│       └── ...
-├── public/                  # Recursos estáticos opcionales
-├── electron.vite.config.ts  # Configuración principal de Electron + Vite
-├── tailwind.config.js       # Configuración de TailwindCSS
-├── postcss.config.js        # Configuración de PostCSS
-├── tsconfig.json            # Configuración de TypeScript para main/preload
-├── package.json             # Dependencias y scripts
-└── README.md
+│   ├── main/                   # Main process (Electron)
+│   │   ├── index.ts
+│   │   ├── windows/
+│   │   ├── services/
+│   │   └── controllers/
+│   ├── preload/                # Preload scripts
+│   │   └── index.ts
+│   ├── renderer/               # Renderer process (React)
+│   │   ├── src/
+│   │   │   ├── App.tsx
+│   │   │   ├── main.tsx
+│   │   │   ├── components/
+│   │   │   ├── pages/
+│   │   │   ├── hooks/
+│   │   │   └── stores/
+│   │   └── index.html
+│   ├── shared/                 # Código compartido
+│   │   ├── types/
+│   │   ├── constants/
+│   │   └── utils/
+│   └── modules/                # Módulos funcionales
+│       ├── workspace/
+│       ├── tasks/
+│       ├── analytics/
+│       └── plugins/
+├── tests/                      # Tests
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+└── resources/                  # Recursos (iconos, etc)
 ```
 
----
+## 🛠 Stack Tecnológico
 
-## 📦 Scripts disponibles
+| Tecnología      | Propósito                        |
+| --------------- | -------------------------------- |
+| Electron 32+    | Aplicación de escritorio         |
+| React 18        | UI Framework                     |
+| TypeScript 5    | Lenguaje principal               |
+| Vite 7          | Build tool                       |
+| TailwindCSS 3   | Estilos                          |
+| SQLite          | Base de datos (Analytics)        |
+| Vitest          | Unit testing                     |
+| Playwright      | E2E testing                      |
+
+## 📜 Scripts Disponibles
 
 ```bash
-# 🔄 Inicia la app en modo desarrollo
-npx electron-vite dev
+# Desarrollo
+npm run dev                 # Modo desarrollo con hot-reload
+npm run dev:renderer        # Solo frontend (Vite)
+npm run dev:main           # Solo main process con watch
 
-# ⚙️ Compila todo el código para producción
-npx electron-vite build
+# Build
+npm run build              # Build completo
+npm run build:main         # Build solo main process
+npm run build:renderer     # Build solo renderer
 
-# 🧪 Ejecuta solo el frontend React (útil para UI testing)
-npx vite --root src/renderer
+# Testing
+npm test                   # Run all tests
+npm run test:unit          # Unit tests
+npm run test:e2e           # E2E tests con Playwright
+npm run test:coverage      # Coverage report
+
+# Code Quality
+npm run lint               # ESLint
+npm run lint:fix           # ESLint auto-fix
+npm run format             # Prettier
+npm run typecheck          # TypeScript type checking
+
+# Build & Package
+npm run clean              # Limpiar dist/
+npm run package            # Empaquetar para plataforma actual
+npm run package:all        # Empaquetar para todas las plataformas
 ```
----
 
-## 🛠 Instalación y primeros pasos
+## 🎯 Estado del Proyecto
 
-Sigue estos pasos para iniciar el proyecto en tu entorno local:
+### ✅ Completado
 
-### 1. Clona el repositorio (si aplica)
+- [x] Estructura de carpetas reorganizada
+- [x] Configuración de TypeScript (multiple tsconfigs)
+- [x] Configuración de ESLint y Prettier
+- [x] Configuración de electron-vite
+- [x] Tipos compartidos (shared/types/)
+- [x] Servicios base (Database, FileSystem, EventBus)
+- [x] Estructura de módulos base
+- [x] Main process refactorizado
+- [x] Preload script con API segura
+- [x] Renderer base con React
 
-```bash
-git clone https://github.com/tu-usuario/space-manager.git
-cd space-manager
+### 🚧 En Progreso / Próximos Pasos
 
----
+- [ ] Implementar módulos core (Workspace, Tasks, Analytics)
+- [ ] Motor de ejecución de espacios
+- [ ] UI Components (Dashboard, Space Editor, Task Manager)
+- [ ] IPC Handlers completos
+- [ ] Sistema de plugins
+- [ ] Integración con calendario
+- [ ] Tests unitarios y E2E
 
+## 📄 Licencia
 
+MIT
 
-## 🧠 ¿Cómo trabajar en el proyecto?
+## 👥 Autor
 
-### 🔹 Desarrollo Frontend (UI)
-
-* Trabaja en `src/renderer/`
-* Usa `App.tsx`, crea componentes dentro de `modules-ui/`
-* Usa `TailwindCSS` para estilos rápidos y consistentes
-* Puedes usar hooks como `useState`, `useEffect`, etc.
-
-### 🔹 Desarrollo Backend (Lógica de app)
-
-* Trabaja en `src/modules/` para lógica por módulo
-* Trabaja en `src/main/` para control de ventanas y eventos
-* Usa `ipcMain` ↔ `ipcRenderer` para comunicación
-
-### 🔹 Comunicación segura UI ↔ backend
-
-* Define funciones en `preload.ts` usando `contextBridge`
-* Accede a ellas desde React vía `window.electronAPI`
-
-### 🔹 Plugins o scripts externos
-
-* Se colocan en una futura carpeta `plugins/`
-* Pueden ejecutarse vía Node (child\_process) o IPC
+Gabriel Medina
 
 ---
 
-## ✅ Módulos esperados en el ecosistema
-
-| Módulo              | Función principal                              |
-| ------------------- | ---------------------------------------------- |
-| Espacios de trabajo | Crea y lanza apps/páginas agrupadas            |
-| Gestor de tareas    | Checklists por espacio + recordatorios         |
-| Analytics           | Métricas de uso y productividad                |
-| Plugins             | Extensiones que se pueden cargar dinámicamente |
-| Audio/Ambiente      | Sonidos, música o fondo relajante              |
-| Automatizador       | Secuencias automáticas de tareas               |
-
----
-
-## 📌 Recomendaciones de trabajo
-
-* Mantén los módulos desacoplados (se comunican por eventos o `ipc`)
-* Mantén separación entre lógica y UI
-* Usa Tailwind para UI rápida y consistente
-* Evita código duplicado (crear utilidades en `utils/` si es necesario)
-
----
-
-## 🧑‍💻 ¿Contribuir o expandir?
-
-Este proyecto está diseñado para escalar modularmente.
-Puedes crear nuevas carpetas en `/modules/` y `/modules-ui/` para nuevos componentes.
-
----
-
-## 💬 ¿Dudas o errores?
-
-Documenta en un archivo `NOTAS.md` o abre una carpeta `/docs/` si es necesario. También puedes dejar mensajes tipo log dentro del `main.ts` o el `preload.ts` mientras desarrollas.
-
----
-
-¡Ahora sí estás listo para trabajar! 💪
+**Versión:** 1.0.0
+**Última actualización:** Noviembre 2025
