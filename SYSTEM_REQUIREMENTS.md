@@ -52,10 +52,10 @@ Este documento detalla los requisitos y versiones necesarias para desarrollar y 
 ```json
 {
   "electron": "^33.2.1",
-  "react": "^19.0.0",
-  "react-dom": "^19.0.0",
+  "react": "^18.3.1",
+  "react-dom": "^18.3.1",
   "typescript": "^5.7.2",
-  "vite": "^6.0.5",
+  "vite": "^5.4.11",
   "electron-vite": "^2.3.0",
   "eslint": "^9.18.0",
   "tailwindcss": "^3.4.17"
@@ -111,9 +111,13 @@ npm config set python "C:\Path\To\Python312\python.exe"
 ### 5. Instalar Dependencias del Proyecto
 
 ```powershell
-# Limpiar instalación previa (si existe)
-Remove-Item -Recurse -Force node_modules
-Remove-Item -Force package-lock.json
+# Limpiar instalación previa (si existe) - PowerShell
+Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
+Remove-Item -Force package-lock.json -ErrorAction SilentlyContinue
+
+# O si usas CMD:
+# rmdir /s /q node_modules
+# del package-lock.json
 
 # Instalar dependencias
 npm install
@@ -121,6 +125,8 @@ npm install
 # Si better-sqlite3 falla, reconstruir manualmente:
 npm run rebuild
 ```
+
+**Nota**: Si ves warnings sobre "Unknown project config", son normales y no afectan la instalación.
 
 ---
 
