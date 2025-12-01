@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spacemanager.app/schemas/task.schema.json",
+  "title": "Task Data Store",
+  "description": "JSON Schema for Task data store file",
+  "type": "object",
+  "required": ["version", "lastModified", "items"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Data store version (semantic versioning)"
+    },
+    "lastModified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last modification timestamp (ISO 8601)"
+    },
+    "items": {
+      "type": "array",
+      "description": "Array of tasks",
+      "items": {
+        "$ref": "#/definitions/Task"
+      }
+    }
+  },
+  "definitions": {
+    "Task": {
+      "type": "object",
+      "required": ["id", "spaceId", "name", "enabled", "status", "createdAt", "updatedAt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique task identifier"
+        },
+        "spaceId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Associated space identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Task name"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Task description (optional)"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this task is enabled"
+        },
+        "schedule": {
+          "type": "object",
+          "description": "Task schedule configuration (optional)",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["once", "daily", "weekly", "monthly", "cron"],
+              "description": "Schedule type"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Schedule value (depends on type)"
+            },
+            "timezone": {
+              "type": "string",
+              "description": "Timezone (e.g., 'America/New_York') (optional)"
+            }
+          },
+          "additionalProperties": false
+        },
+        "lastRunAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last execution timestamp (optional)"
+        },
+        "nextRunAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Next scheduled execution timestamp (optional)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "running", "completed", "failed", "disabled"],
+          "description": "Current task status"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

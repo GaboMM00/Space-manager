@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spacemanager.app/schemas/space.schema.json",
+  "title": "Space Data Store",
+  "description": "JSON Schema for Space data store file",
+  "type": "object",
+  "required": ["version", "lastModified", "items"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Data store version (semantic versioning)"
+    },
+    "lastModified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last modification timestamp (ISO 8601)"
+    },
+    "items": {
+      "type": "array",
+      "description": "Array of spaces",
+      "items": {
+        "$ref": "#/definitions/Space"
+      }
+    }
+  },
+  "definitions": {
+    "Space": {
+      "type": "object",
+      "required": ["id", "name", "resources", "executionOrder", "createdAt", "updatedAt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique space identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Space name"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Space description (optional)"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon identifier or emoji (optional)"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+          "description": "Color in hex format (optional)"
+        },
+        "resources": {
+          "type": "array",
+          "description": "List of resources in this space",
+          "items": {
+            "$ref": "#/definitions/Resource"
+          }
+        },
+        "executionOrder": {
+          "type": "string",
+          "enum": ["sequential", "parallel"],
+          "description": "How resources should be executed"
+        },
+        "autoExecute": {
+          "type": "boolean",
+          "description": "Auto-execute on startup (optional)"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags for categorization (optional)",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Resource": {
+      "type": "object",
+      "required": ["id", "type", "name", "path", "enabled", "order", "createdAt", "updatedAt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique resource identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["application", "url", "file", "script"],
+          "description": "Resource type"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Resource name"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path or URL to the resource"
+        },
+        "args": {
+          "type": "array",
+          "description": "Command-line arguments (optional)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this resource is enabled"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Execution order (0-based)"
+        },
+        "retryCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Number of retries on failure (optional)"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Timeout in milliseconds (optional)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
