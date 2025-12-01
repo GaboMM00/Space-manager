@@ -1,0 +1,55 @@
+import { contextBridge, ipcRenderer } from 'electron'
+import { electronAPI } from '@electron-toolkit/preload'
+import { IPC_CHANNELS } from '../shared/types/ipc.types'
+
+// Custom typed API for renderer
+const api = {
+  // System
+  system: {
+    ping: () => ipcRenderer.invoke(IPC_CHANNELS.SYSTEM_PING),
+    getInfo: () => ipcRenderer.invoke(IPC_CHANNELS.SYSTEM_INFO)
+  },
+
+  // Spaces (placeholder for Phase 1 Sprint 1.3)
+  spaces: {
+    create: (data: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_CREATE, data),
+    update: (id: string, data: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_UPDATE, id, data),
+    delete: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_DELETE, id),
+    get: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_GET, id),
+    list: (filters?: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_LIST, filters),
+    execute: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_EXECUTE, id)
+  },
+
+  // Event listeners (Main → Renderer)
+  on: (channel: string, callback: (...args: any[]) => void) => {
+    const subscription = (_event: any, ...args: any[]) => callback(...args)
+    ipcRenderer.on(channel, subscription)
+
+    // Return unsubscribe function
+    return () => {
+      ipcRenderer.removeListener(channel, subscription)
+    }
+  },
+
+  // One-time event listener
+  once: (channel: string, callback: (...args: any[]) => void) => {
+    ipcRenderer.once(channel, (_event: any, ...args: any[]) => callback(...args))
+  }
+}
+
+// Use `contextBridge` APIs to expose Electron APIs to
+// renderer only if context isolation is enabled, otherwise
+// just add to the DOM global.
+if (process.contextIsolated) {
+  try {
+    contextBridge.exposeInMainWorld('electron', electronAPI)
+    contextBridge.exposeInMainWorld('api', api)
+  } catch (error) {
+    console.error(error)
+  }
+} else {
+  // @ts-ignore (define in dts)
+  window.electron = electronAPI
+  // @ts-ignore (define in dts)
+  window.api = api
+}

@@ -1,0 +1,35 @@
+/**
+ * Window API type declarations
+ * Extends Window interface with Electron API
+ */
+
+import { Result, SystemInfo } from '../../../shared/types/ipc.types'
+
+declare global {
+  interface Window {
+    electron: any
+    api: {
+      // System
+      system: {
+        ping: () => Promise<Result<{ pong: boolean; timestamp: number }>>
+        getInfo: () => Promise<Result<SystemInfo>>
+      }
+
+      // Spaces (placeholder for Phase 1 Sprint 1.3)
+      spaces: {
+        create: (data: any) => Promise<Result<any>>
+        update: (id: string, data: any) => Promise<Result<any>>
+        delete: (id: string) => Promise<Result<void>>
+        get: (id: string) => Promise<Result<any>>
+        list: (filters?: any) => Promise<Result<any[]>>
+        execute: (id: string) => Promise<Result<any>>
+      }
+
+      // Event listeners
+      on: (channel: string, callback: (...args: any[]) => void) => () => void
+      once: (channel: string, callback: (...args: any[]) => void) => void
+    }
+  }
+}
+
+export {}

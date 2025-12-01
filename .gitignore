@@ -1,0 +1,20 @@
+node_modules
+dist
+out
+*.log
+
+# OS
+.DS_Store
+
+# IDEs
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Electron
+build
+
+# TypeScript
+*.tsbuildinfo

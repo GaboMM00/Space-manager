@@ -1,0 +1,223 @@
+===============================================================================
+GUÍA RÁPIDA: Proyecto Electron + Vite + React + TypeScript + Tailwind CSS
+===============================================================================
+
+PROCESO REAL QUE FUNCIONÓ EN ESTE PROYECTO
+===============================================================================
+
+PASO 1: INSTALAR NODE.JS 20
+----------------------------
+# Con nvm (recomendado)
+nvm install 20
+nvm use 20
+
+# Verificar versión
+node -v  # Debe mostrar v20.x.x
+
+PASO 2: CREAR PROYECTO CON ELECTRON-VITE
+-----------------------------------------
+npm create electron-vite@latest my-app
+
+# Durante la creación, seleccionar:
+# - Framework: React
+# - TypeScript: Yes
+# - Add Electron updater: No (opcional)
+
+PASO 3: ENTRAR AL PROYECTO E INSTALAR DEPENDENCIAS
+---------------------------------------------------
+cd my-app
+npm install
+
+PASO 4: VERIFICAR VERSIONES COMPATIBLES EN package.json
+--------------------------------------------------------
+IMPORTANTE: Asegurarse que las versiones sean compatibles:
+
+{
+  "devDependencies": {
+    "electron": "^32.2.6",        # NO usar 33+ (incompatible)
+    "vite": "^5.4.11",            # NO usar 6.x (incompatible con electron-vite 2.3)
+    "electron-vite": "^2.3.0",
+    "react": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}
+
+Si las versiones son diferentes, AJUSTAR MANUALMENTE antes de continuar.
+
+PASO 5: EJECUTAR EN MODO DESARROLLO
+------------------------------------
+npm run dev
+
+# Esto debería:
+# - Compilar Main Process
+# - Compilar Preload
+# - Iniciar servidor Renderer (React)
+# - Abrir ventana Electron con Hot Reload activo
+
+PASO 6: INSTALAR TAILWIND CSS 4 (OPCIONAL)
+-------------------------------------------
+IMPORTANTE: Tailwind CSS 4 tiene cambios significativos vs 3.x
+
+npm install -D tailwindcss @tailwindcss/postcss autoprefixer
+
+PASO 7: CONFIGURAR postcss.config.js
+-------------------------------------
+IMPORTANTE: Usar @tailwindcss/postcss en lugar de tailwindcss directo
+
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {}
+  }
+}
+
+PASO 8: CONFIGURAR src/renderer/src/assets/index.css
+-----------------------------------------------------
+IMPORTANTE: Tailwind 4 usa @import y @theme en lugar de @tailwind
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary-500: #667eea;
+  --color-primary-600: #5a67d8;
+  --color-secondary-500: #764ba2;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg;
+  }
+}
+
+/* Custom component classes */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-6;
+  }
+}
+
+PASO 9: REINICIAR npm run dev
+------------------------------
+# Detener el proceso anterior (Ctrl+C)
+npm run dev
+
+===============================================================================
+ERRORES COMUNES Y SOLUCIONES
+===============================================================================
+
+ERROR 1: Vite 6.x incompatible
+-------------------------------
+SÍNTOMA: Error al instalar dependencias, conflictos de peer dependencies
+SOLUCIÓN: Cambiar en package.json a "vite": "^5.4.11"
+
+ERROR 2: Electron 33+ problemas de compatibilidad
+-------------------------------------------------
+SÍNTOMA: Errores raros al compilar o ejecutar
+SOLUCIÓN: Usar "electron": "^32.2.6"
+
+ERROR 3: @electron-toolkit/utils undefined errors
+--------------------------------------------------
+SÍNTOMA: Cannot read properties of undefined (reading 'isPackaged')
+SOLUCIÓN: Este error aparece en procesos bash antiguos, ignorar si la app funciona.
+          Alternativamente, remover la dependencia y usar código Electron nativo.
+
+ERROR 4: Hot Reload no funciona
+--------------------------------
+SÍNTOMA: Cambios en código no se reflejan automáticamente
+SOLUCIÓN: Reiniciar npm run dev completamente (Ctrl+C y volver a ejecutar)
+
+ERROR 5: Tailwind clases no funcionan
+--------------------------------------
+SÍNTOMA: Clases de Tailwind no aplican estilos
+SOLUCIÓN:
+1. Verificar que postcss.config.js existe
+2. Verificar que @tailwind está en index.css
+3. Reiniciar npm run dev
+
+===============================================================================
+VERSIONES EXACTAS QUE FUNCIONARON EN SPACE MANAGER
+===============================================================================
+
+Node.js: 20.x
+Electron: 32.2.6
+Vite: 5.4.11
+electron-vite: 2.3.0
+React: 18.3.1
+TypeScript: 5.6.3
+Tailwind CSS: 4.1.17
+@vitejs/plugin-react: 4.3.4
+
+===============================================================================
+SCRIPTS DISPONIBLES
+===============================================================================
+
+npm run dev          # Desarrollo con Hot Reload
+npm run build        # Build de producción
+npm run start        # Preview del build
+npm run lint         # ESLint
+npm run format       # Prettier
+npm run typecheck    # Verificar tipos TypeScript
+
+npm run build:win    # Build para Windows
+npm run build:mac    # Build para macOS
+npm run build:linux  # Build para Linux
+
+===============================================================================
+ESTRUCTURA DE CARPETAS GENERADA
+===============================================================================
+
+my-app/
+├── src/
+│   ├── main/                 # Main Process (Electron backend)
+│   │   └── index.ts
+│   ├── preload/             # Preload scripts (IPC bridge)
+│   │   └── index.ts
+│   └── renderer/            # Renderer Process (React frontend)
+│       ├── index.html
+│       └── src/
+│           ├── main.tsx
+│           ├── App.tsx
+│           └── assets/
+│               └── index.css
+├── resources/               # Recursos para build
+├── electron.vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+├── tsconfig.node.json
+├── tsconfig.web.json
+└── package.json
+
+===============================================================================
+NOTAS IMPORTANTES
+===============================================================================
+
+1. ✅ npm create electron-vite es el método oficial y funcional
+2. ✅ Las versiones DEBEN ser compatibles (ver lista exacta arriba)
+3. ✅ Electron 32 es más estable que 33+ para este stack
+4. ✅ Vite 5.4.11 es obligatorio (6.x rompe con electron-vite 2.3.0)
+5. ⚠️  Tailwind 4.x funciona pero puede tener breaking changes vs 3.x
+6. ✅ El proyecto generado ya incluye TypeScript configurado
+7. ✅ Hot Reload funciona out-of-the-box en dev mode
+8. ⚠️  Errores en procesos bash background son viejos, ignorar si la app corre
+
+===============================================================================
+CHECKLIST DE VERIFICACIÓN POST-INSTALACIÓN
+===============================================================================
+
+[ ] node -v muestra v20.x.x
+[ ] npm run dev inicia sin errores
+[ ] Se abre ventana Electron con la app
+[ ] DevTools se abren automáticamente en dev
+[ ] Hot Reload funciona al editar archivos
+[ ] Tailwind clases aplican correctamente
+[ ] npm run build completa sin errores
+[ ] TypeScript no muestra errores
+
+Si todos los checks pasan, el proyecto está listo para desarrollo.
+
+===============================================================================
