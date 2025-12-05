@@ -449,7 +449,8 @@ Docs: Updated ROADMAP.md, ARCHITECTURE.md
 
 ## 📊 Estado Actual del Proyecto
 
-**Última Actualización:** 30 de Noviembre 2025
+**Última Actualización:** 05 de Diciembre 2025 - Sprint 2.1
+**Estado Actual:** ✅ Fase 2 - Sprint 2.1 Completado
 
 ### ✅ Completado
 
@@ -914,49 +915,70 @@ feat(execution): implement Phase 1 Sprint 1.4 - Execution Engine
 **Duración Estimada:** 3 semanas
 **Estado:** 📅 PLANEADA
 
-### Sprint 2.1 - Componentes Base
+### Sprint 2.1 - Componentes Base ✅ COMPLETADO (05/12/2025)
 
 **Objetivo:** Design system y componentes reutilizables
 
 **Pre-requisitos:**
 - ✅ Fase 1 completada
 - ✅ Tailwind CSS configurado
-- [ ] Revisar paleta de colores del proyecto
+- ✅ Revisar paleta de colores del proyecto
 
 **Tareas:**
-- [ ] Crear design system con Tailwind
-- [ ] Implementar componentes reutilizables
-- [ ] Desarrollar layout principal de aplicación
-- [ ] Crear sistema de navegación
-- [ ] Implementar tema claro/oscuro
+- [x] Crear design system con Tailwind
+- [x] Implementar componentes reutilizables
+- [x] Desarrollar layout principal de aplicación
+- [x] Crear sistema de navegación
+- [x] Implementar tema claro/oscuro
 
-**Componentes a crear:**
+**Componentes creados:**
 ```
-src/renderer/src/components/
-├── ui/
-│   ├── Button/
-│   │   ├── Button.tsx
-│   │   └── Button.test.tsx
-│   ├── Input/
-│   │   ├── Input.tsx
-│   │   └── Input.test.tsx
-│   ├── Card/
-│   ├── Modal/
-│   ├── Dropdown/
-│   ├── Tooltip/
-│   └── Badge/
-├── layout/
-│   ├── MainLayout/
-│   ├── Sidebar/
-│   ├── Header/
-│   └── Footer/
-└── navigation/
-    └── NavBar/
+src/renderer/src/
+├── components/
+│   ├── ui/
+│   │   ├── Button/         # Botón con 5 variantes y loading state
+│   │   ├── Input/          # Input con validación y helpers
+│   │   ├── Card/           # Card con Header, Body, Footer
+│   │   ├── Modal/          # Modal con portal, focus trap, ESC
+│   │   ├── Dropdown/       # Dropdown con items y dividers
+│   │   ├── Tooltip/        # Tooltip con 4 posiciones
+│   │   └── Badge/          # Badge con 6 variantes de color
+│   ├── layout/
+│   │   ├── MainLayout/     # Layout principal con sidebar/header
+│   │   ├── Sidebar/        # Sidebar con secciones e items
+│   │   └── Header/         # Header con título y acciones
+│   └── navigation/
+│       └── NavBar/         # Barra de navegación
+├── theme/
+│   ├── design-tokens.ts    # Tokens de diseño centralizados
+│   └── theme-context.tsx   # Context para tema light/dark/system
+├── types/
+│   └── component.types.ts  # Tipos compartidos de componentes
+└── utils/
+    └── cn.ts               # Utilidad para merge de clases
 ```
+
+**Criterios de aceptación:**
+- [x] Design system con tokens centralizados (spacing, colors, typography)
+- [x] 7 componentes UI reutilizables implementados
+- [x] Layout system completo (MainLayout, Sidebar, Header)
+- [x] Sistema de navegación (NavBar, NavItem)
+- [x] Tema claro/oscuro con ThemeProvider y localStorage
+- [x] TypeScript sin errores (0 errores de compilación)
+- [x] Componentes accesibles (ARIA labels, keyboard navigation)
+- [x] Responsive y adaptable
+
+**Notas de Implementación:**
+- **Design Tokens:** Sistema completo de tokens con spacing, colors, typography, shadows, z-index
+- **Variantes:** Button (5), Badge (6 colores), Modal (5 tamaños), Input (5 tamaños)
+- **Accesibilidad:** Focus trap en Modal, ARIA labels, keyboard navigation
+- **Dark Mode:** Sistema con ThemeContext que soporta light/dark/system
+- **Dependencias añadidas:** clsx, tailwind-merge
+- **Total líneas de código:** ~1,850 líneas
 
 **Commit sugerido:**
 ```bash
-feat(ui): implement Phase 2 Sprint 1 - Base Components & Design System
+feat(ui): implement Phase 2 Sprint 2.1 - Base Components & Design System
 ```
 
 ---
