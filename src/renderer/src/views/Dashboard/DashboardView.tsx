@@ -2,15 +2,18 @@
  * Dashboard View
  * Main dashboard showing all spaces
  * Phase 2 Sprint 2.2 - Main Views
+ * Updated Sprint 2.3 - UX y Accesibilidad
  */
 
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSpaces } from '../../hooks/useSpaces'
+import { useToastContext } from '../../context/ToastContext'
 import { Card, CardHeader, CardTitle, CardBody, CardFooter } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Dropdown, DropdownItem, DropdownDivider } from '../../components/ui/Dropdown'
+import { Spinner } from '../../components/ui/Spinner'
 
 /**
  * Dashboard View Component
@@ -18,15 +21,14 @@ import { Dropdown, DropdownItem, DropdownDivider } from '../../components/ui/Dro
 export const DashboardView: React.FC = () => {
   const navigate = useNavigate()
   const { spaces, loading, error, deleteSpace, executeSpace } = useSpaces()
+  const toast = useToastContext()
 
   const handleExecute = async (spaceId: string): Promise<void> => {
     const result = await executeSpace(spaceId)
     if (result.success) {
-      // TODO: Show success notification
-      console.log('Space executed successfully')
+      toast.success('Space executed successfully')
     } else {
-      // TODO: Show error notification
-      console.error('Failed to execute space:', result.error)
+      toast.error(result.error || 'Failed to execute space')
     }
   }
 
@@ -38,11 +40,9 @@ export const DashboardView: React.FC = () => {
     if (confirm('Are you sure you want to delete this space?')) {
       const result = await deleteSpace(spaceId)
       if (result.success) {
-        // TODO: Show success notification
-        console.log('Space deleted successfully')
+        toast.success('Space deleted successfully')
       } else {
-        // TODO: Show error notification
-        console.error('Failed to delete space:', result.error)
+        toast.error(result.error || 'Failed to delete space')
       }
     }
   }
@@ -66,7 +66,7 @@ export const DashboardView: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <Spinner size="xl" />
           <p className="mt-4 text-gray-600 dark:text-gray-400">Loading spaces...</p>
         </div>
       </div>

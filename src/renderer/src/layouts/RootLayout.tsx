@@ -2,6 +2,7 @@
  * Root Layout
  * Main application layout with sidebar navigation
  * Phase 2 Sprint 2.2 - Main Views
+ * Updated Sprint 2.3 - UX y Accesibilidad
  */
 
 import React from 'react'
@@ -12,6 +13,7 @@ import { Header } from '../components/layout/Header'
 import { Button } from '../components/ui/Button'
 import { Dropdown, DropdownItem, DropdownLabel } from '../components/ui/Dropdown'
 import { useTheme } from '../theme/theme-context'
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 
 /**
  * Root Layout Component
@@ -20,6 +22,40 @@ export const RootLayout: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { theme, setTheme } = useTheme()
+
+  // Global keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'n',
+      ctrl: true,
+      handler: () => navigate('/spaces/new'),
+      description: 'Create new space'
+    },
+    {
+      key: 'd',
+      ctrl: true,
+      handler: () => navigate('/dashboard'),
+      description: 'Go to dashboard'
+    },
+    {
+      key: ',',
+      ctrl: true,
+      handler: () => navigate('/settings'),
+      description: 'Open settings'
+    },
+    {
+      key: 't',
+      ctrl: true,
+      shift: true,
+      handler: () => {
+        const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system']
+        const currentIndex = themes.indexOf(theme)
+        const nextIndex = (currentIndex + 1) % themes.length
+        setTheme(themes[nextIndex])
+      },
+      description: 'Toggle theme'
+    }
+  ])
 
   const isActive = (path: string): boolean => {
     return location.pathname === path || location.pathname.startsWith(path)
