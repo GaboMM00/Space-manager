@@ -27,6 +27,8 @@ export interface Resource extends BaseEntity {
   order: number
   retryCount?: number
   timeout?: number
+  workingDirectory?: string
+  delay?: number
 }
 
 /**

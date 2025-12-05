@@ -3,6 +3,7 @@ import { join } from 'path'
 import { logger } from '../shared/utils/logger'
 import { registerSystemHandlers } from './ipc/handlers/system-handlers'
 import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
+import { registerExecutionHandlers } from './ipc/handlers/execution-handlers'
 
 /**
  * Initialize IPC handlers
@@ -15,6 +16,9 @@ function initializeIPC(): void {
 
   // Register workspace handlers
   registerWorkspaceHandlers()
+
+  // Register execution handlers
+  registerExecutionHandlers()
 
   // TODO: Register other handlers in future sprints
   // - Task handlers (Sprint 3.1)

@@ -14,6 +14,10 @@ import {
   SpaceExport,
   CreateResourceDto
 } from '../../modules/workspace/types/workspace.types'
+import {
+  ExecutionResult as ModuleExecutionResult,
+  ExecutionProgress as ModuleExecutionProgress
+} from '../../modules/execution/types/execution.types'
 // Note: PaginatedResponse and DateRange will be used in future sprints
 // import { PaginatedResponse, DateRange } from './common.types'
 
@@ -123,7 +127,7 @@ export interface IPCInvokeMap {
   }
   [IPC_CHANNELS.SPACES_EXECUTE]: {
     args: [string]
-    return: Result<ExecutionResult>
+    return: Result<ModuleExecutionResult>
   }
 
   // System
@@ -141,7 +145,7 @@ export interface IPCInvokeMap {
  * Type-safe IPC event listener signature
  */
 export interface IPCEventMap {
-  [IPC_EVENTS.EXECUTION_PROGRESS]: ExecutionProgress
+  [IPC_EVENTS.EXECUTION_PROGRESS]: ModuleExecutionProgress
   [IPC_EVENTS.EXECUTION_COMPLETE]: ExecutionComplete
   [IPC_EVENTS.EXECUTION_ERROR]: ExecutionError
   [IPC_EVENTS.SPACE_UPDATED]: SpaceUpdated
@@ -150,35 +154,16 @@ export interface IPCEventMap {
 }
 
 // ============================================================================
-// Execution Types
+// IPC Event Payload Types
 // ============================================================================
-export interface ExecutionResult {
-  spaceId: string
-  success: boolean
-  startedAt: string
-  completedAt: string
-  duration: number
-  resourcesTotal: number
-  resourcesSuccess: number
-  resourcesFailed: number
-  errors: ExecutionError[]
-}
-
-export interface ExecutionProgress {
-  spaceId: string
-  resourceId: string
-  resourceName: string
-  progress: number
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  message?: string
-}
 
 export interface ExecutionComplete {
   spaceId: string
-  result: ExecutionResult
+  result: ModuleExecutionResult
 }
 
 export interface ExecutionError {
+  spaceId: string
   resourceId: string
   resourceName: string
   error: string
