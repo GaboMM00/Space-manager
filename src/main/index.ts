@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { logger } from '../shared/utils/logger'
 import { registerSystemHandlers } from './ipc/handlers/system-handlers'
+import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
 
 /**
  * Initialize IPC handlers
@@ -12,8 +13,10 @@ function initializeIPC(): void {
   // Register system handlers
   registerSystemHandlers()
 
+  // Register workspace handlers
+  registerWorkspaceHandlers()
+
   // TODO: Register other handlers in future sprints
-  // - Space handlers (Sprint 1.3)
   // - Task handlers (Sprint 3.1)
   // - Analytics handlers (Sprint 3.2)
 

@@ -4,6 +4,16 @@
  */
 
 import { Result } from './common.types'
+import {
+  Space,
+  CreateSpaceDto,
+  UpdateSpaceDto,
+  SpaceSearchFilters,
+  SpaceSortOptions,
+  SpaceStats,
+  SpaceExport,
+  CreateResourceDto
+} from '../../modules/workspace/types/workspace.types'
 // Note: PaginatedResponse and DateRange will be used in future sprints
 // import { PaginatedResponse, DateRange } from './common.types'
 
@@ -17,6 +27,13 @@ export const IPC_CHANNELS = {
   SPACES_DELETE: 'spaces:delete',
   SPACES_GET: 'spaces:get',
   SPACES_LIST: 'spaces:list',
+  SPACES_DUPLICATE: 'spaces:duplicate',
+  SPACES_SEARCH: 'spaces:search',
+  SPACES_STATS: 'spaces:stats',
+  SPACES_EXPORT: 'spaces:export',
+  SPACES_IMPORT: 'spaces:import',
+  SPACES_ADD_RESOURCE: 'spaces:addResource',
+  SPACES_GET_TAGS: 'spaces:getTags',
   SPACES_EXECUTE: 'spaces:execute',
 
   // Tasks
@@ -70,11 +87,39 @@ export interface IPCInvokeMap {
   }
   [IPC_CHANNELS.SPACES_GET]: {
     args: [string]
-    return: Result<Space | null>
+    return: Result<Space>
   }
   [IPC_CHANNELS.SPACES_LIST]: {
-    args: [SpaceFilters?]
+    args: [SpaceSortOptions?]
     return: Result<Space[]>
+  }
+  [IPC_CHANNELS.SPACES_DUPLICATE]: {
+    args: [string, string?]
+    return: Result<Space>
+  }
+  [IPC_CHANNELS.SPACES_SEARCH]: {
+    args: [SpaceSearchFilters]
+    return: Result<Space[]>
+  }
+  [IPC_CHANNELS.SPACES_STATS]: {
+    args: []
+    return: Result<SpaceStats>
+  }
+  [IPC_CHANNELS.SPACES_EXPORT]: {
+    args: [string]
+    return: Result<SpaceExport>
+  }
+  [IPC_CHANNELS.SPACES_IMPORT]: {
+    args: [SpaceExport]
+    return: Result<Space>
+  }
+  [IPC_CHANNELS.SPACES_ADD_RESOURCE]: {
+    args: [string, CreateResourceDto]
+    return: Result<Space>
+  }
+  [IPC_CHANNELS.SPACES_GET_TAGS]: {
+    args: []
+    return: Result<string[]>
   }
   [IPC_CHANNELS.SPACES_EXECUTE]: {
     args: [string]
@@ -105,63 +150,8 @@ export interface IPCEventMap {
 }
 
 // ============================================================================
-// Data Transfer Objects (DTOs)
+// Execution Types
 // ============================================================================
-
-/**
- * Space-related types
- */
-export interface Space {
-  id: string
-  name: string
-  description?: string
-  icon?: string
-  color?: string
-  resources: Resource[]
-  enabled: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface CreateSpaceDto {
-  name: string
-  description?: string
-  icon?: string
-  color?: string
-}
-
-export interface UpdateSpaceDto {
-  name?: string
-  description?: string
-  icon?: string
-  color?: string
-  enabled?: boolean
-}
-
-export interface SpaceFilters {
-  enabled?: boolean
-  search?: string
-}
-
-/**
- * Resource types
- */
-export type ResourceType = 'application' | 'url' | 'script' | 'file'
-
-export interface Resource {
-  id: string
-  spaceId: string
-  type: ResourceType
-  name: string
-  path: string
-  arguments?: string[]
-  enabled: boolean
-  order: number
-}
-
-/**
- * Execution types
- */
 export interface ExecutionResult {
   spaceId: string
   success: boolean

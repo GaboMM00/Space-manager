@@ -169,7 +169,7 @@ export function createSuccessResult<T>(data?: T): Result<T> {
 /**
  * Helper function to create error result
  */
-export function createErrorResult(error: string, code?: string): Result {
+export function createErrorResult<T = void>(error: string, code?: string): Result<T> {
   return {
     success: false,
     error,
