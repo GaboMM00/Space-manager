@@ -154,11 +154,11 @@ export const DashboardView: React.FC = () => {
                 <Badge variant="primary" size="sm">
                   {space.resources.length} resources
                 </Badge>
-                {space.category && (
-                  <Badge variant="secondary" size="sm">
-                    {space.category}
+                {space.tags && space.tags.length > 0 && space.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" size="sm">
+                    {tag}
                   </Badge>
-                )}
+                ))}
               </div>
 
               <div className="space-y-1">

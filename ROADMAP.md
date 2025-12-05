@@ -449,8 +449,8 @@ Docs: Updated ROADMAP.md, ARCHITECTURE.md
 
 ## 📊 Estado Actual del Proyecto
 
-**Última Actualización:** 05 de Diciembre 2025 - Sprint 2.1
-**Estado Actual:** ✅ Fase 2 - Sprint 2.1 Completado
+**Última Actualización:** 05 de Diciembre 2025 - Sprint 2.2
+**Estado Actual:** ✅ Fase 2 - Sprint 2.2 Completado
 
 ### ✅ Completado
 
@@ -983,20 +983,68 @@ feat(ui): implement Phase 2 Sprint 2.1 - Base Components & Design System
 
 ---
 
-### Sprint 2.2 - Vistas Principales
+### Sprint 2.2 - Vistas Principales ✅ COMPLETADO (05/12/2025)
 
 **Objetivo:** Implementar vistas core de la aplicación
 
 **Tareas:**
-- [ ] Desarrollar Dashboard de espacios
-- [ ] Crear Editor de espacios
-- [ ] Implementar vista de ejecución de espacios
-- [ ] Desarrollar panel de configuración
-- [ ] Crear vistas de gestión de recursos
+- [x] Desarrollar Dashboard de espacios
+- [x] Crear Editor de espacios
+- [x] Crear vistas de gestión de recursos
+- [x] Desarrollar panel de configuración
+- [x] Implementar routing y navegación
+- [x] Crear ViewModels (Custom Hooks)
+- [x] Integrar con IPC API
+
+**Archivos creados:**
+```
+src/renderer/src/
+├── router/
+│   └── index.tsx              # Configuración React Router
+├── layouts/
+│   └── RootLayout.tsx         # Layout principal con sidebar/header
+├── views/
+│   ├── Dashboard/
+│   │   └── DashboardView.tsx  # Dashboard con grid de espacios
+│   ├── SpaceEditor/
+│   │   └── SpaceEditorView.tsx # Editor completo de espacios
+│   └── Settings/
+│       └── SettingsView.tsx   # Panel de configuración
+└── hooks/
+    ├── useSpaces.ts           # ViewModel para gestión de espacios
+    └── useSpaceEditor.ts      # ViewModel para editor de espacios
+```
+
+**Funcionalidades implementadas:**
+- Dashboard con visualización de todos los espacios en tarjetas
+- Sistema de navegación completo con React Router
+- Editor de espacios con formulario completo (nombre, descripción, tags, recursos)
+- Gestión de recursos (agregar, eliminar, ordenar)
+- Panel de configuración con selector de tema
+- Integración completa con IPC API (list, create, update, delete, execute)
+- ViewModels siguiendo patrón MVVM
+- Manejo de estados de carga y errores
+- Validación de formularios
+
+**Criterios de aceptación:**
+- [x] Dashboard muestra todos los espacios
+- [x] Crear/editar espacios funcional
+- [x] Agregar/eliminar recursos funcional
+- [x] Navegación entre vistas funcional
+- [x] Integración IPC completa
+- [x] TypeScript sin errores (0 errores de compilación)
+- [x] Arquitectura MVVM implementada correctamente
+
+**Notas de implementación:**
+- Uso de React Router con HashRouter para compatibilidad Electron
+- ViewModels implementados como Custom Hooks
+- Manejo de tags como array (reemplazó category string)
+- Validación de recursos con createdAt/updatedAt requeridos
+- Total líneas de código: ~850 líneas
 
 **Commit sugerido:**
 ```bash
-feat(ui): implement Phase 2 Sprint 2 - Main Views
+feat(ui): implement Phase 2 Sprint 2.2 - Main Views
 ```
 
 ---

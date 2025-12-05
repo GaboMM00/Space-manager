@@ -7,11 +7,11 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSpaceEditor } from '../../hooks/useSpaceEditor'
-import { Card, CardHeader, CardTitle, CardBody, CardFooter } from '../../components/ui/Card'
+import { Card, CardHeader, CardTitle, CardBody } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Badge } from '../../components/ui/Badge'
-import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '../../components/ui/Modal'
+import { Modal, ModalHeader, ModalTitle, ModalBody } from '../../components/ui/Modal'
 import type { Resource } from '../../../../modules/workspace/types/workspace.types'
 
 /**
@@ -33,7 +33,9 @@ const ResourceForm: React.FC<{
         type,
         path,
         enabled: true,
-        args: []
+        args: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       })
       setName('')
       setPath('')
@@ -173,10 +175,11 @@ export const SpaceEditorView: React.FC = () => {
               />
 
               <Input
-                label="Category"
-                value={formData.category}
-                onChange={(e) => updateField('category', e.target.value)}
+                label="Tags"
+                value={formData.tags.join(', ')}
+                onChange={(e) => updateField('tags', e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
                 placeholder="e.g., Work, Personal, Study"
+                helperText="Separate tags with commas"
                 fullWidth
               />
 

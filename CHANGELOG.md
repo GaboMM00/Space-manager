@@ -7,6 +7,115 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase 2 Sprint 2.2 (Main Views) - 2025-12-05
+
+**Application Views:**
+- Implemented complete MVVM architecture for UI layer
+- Created 3 main application views with full functionality
+- Added React Router navigation system
+- Implemented ViewModels as Custom Hooks
+- Full integration with IPC API for data management
+
+**Views Implemented:**
+- `DashboardView`: Main dashboard displaying all spaces in a responsive grid
+  - Space cards with resource count and tags
+  - Quick actions: Execute, Edit, Delete
+  - Empty state with "Create Space" call-to-action
+  - Loading and error states
+- `SpaceEditorView`: Complete space creation and editing interface
+  - Form with name, description, tags, icon, color
+  - Execution order selection (sequential/parallel)
+  - Auto-execute checkbox
+  - Resource management: Add, remove, reorder
+  - Modal for adding new resources with type selection
+  - Form validation
+  - Save/Cancel actions
+- `SettingsView`: Application configuration panel
+  - Theme selector (Light/Dark/System) with visual cards
+  - About section with app version and platform info
+
+**ViewModels (Custom Hooks):**
+- `useSpaces`: Manages spaces CRUD operations
+  - loadSpaces(): Fetch all spaces from backend
+  - createSpace(): Create new space
+  - updateSpace(): Update existing space
+  - deleteSpace(): Remove space
+  - executeSpace(): Execute space resources
+  - getSpace(): Get single space by ID
+  - State management: spaces array, loading, error
+  - Automatic data refresh
+- `useSpaceEditor`: Manages space editor state and validation
+  - Form state management with SpaceFormData interface
+  - Field updates with validation
+  - Resource management (add, update, remove, reorder)
+  - Form validation with error handling
+  - Save operation (create or update)
+  - Support for both create and edit modes
+
+**Routing System:**
+- HashRouter configuration for Electron compatibility
+- Routes:
+  - `/dashboard` - Main dashboard view
+  - `/spaces/new` - Create new space
+  - `/spaces/:spaceId/edit` - Edit existing space
+  - `/settings` - Application settings
+- `RootLayout` component with nested routing (Outlet)
+- Navigation via sidebar and programmatic routing
+
+**Layout Integration:**
+- `RootLayout`: Main application structure
+  - Sidebar with navigation items
+  - Header with page title and actions
+  - Theme dropdown in sidebar footer
+  - Active route highlighting
+  - Responsive layout using MainLayout component
+
+**IPC Integration:**
+- Complete integration with window.api
+- Type-safe calls to backend services
+- Error handling and user feedback
+- Real-time state updates after operations
+
+**Bug Fixes:**
+- Fixed Resource validation requiring createdAt/updatedAt properties
+- Changed category (string) to tags (array) to match Space schema
+- Fixed window.electronAPI → window.api references
+- Removed unused imports (CardFooter, ModalFooter, DropdownDivider)
+
+**Technical Details:**
+- Architecture: MVVM pattern with React Hooks as ViewModels
+- State Management: React useState/useCallback hooks
+- Navigation: React Router DOM v6 with HashRouter
+- Forms: Controlled components with validation
+- Error Handling: Try-catch with user-friendly messages
+- Loading States: Loading spinners and disabled states
+
+**Files Created (8 files, ~850 lines):**
+```
+src/renderer/src/
+├── router/index.tsx
+├── layouts/RootLayout.tsx
+├── views/
+│   ├── Dashboard/DashboardView.tsx
+│   ├── SpaceEditor/SpaceEditorView.tsx
+│   └── Settings/SettingsView.tsx
+├── hooks/
+│   ├── useSpaces.ts
+│   └── useSpaceEditor.ts
+└── App.tsx (updated)
+```
+
+**Dependencies Added:**
+- `react-router-dom@6.x`: Client-side routing
+
+**Quality Metrics:**
+- TypeScript: 0 compilation errors ✅
+- MVVM Architecture: Properly implemented
+- Code organization: Clean separation of concerns
+- User Experience: Loading states, error handling, validation
+
+---
+
 ### Added - Phase 2 Sprint 2.1 (Base Components & Design System) - 2025-12-05
 
 **UI Components Library:**
