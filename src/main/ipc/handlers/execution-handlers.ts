@@ -13,6 +13,8 @@ import { getFileSystemService } from '../../services/FileSystemService'
 import { createBackupService } from '../../services/BackupService'
 import { createEventBus } from '../../../shared/utils/event-bus'
 import { createSpaceService } from '../../../modules/workspace/services/SpaceService'
+import { getSQLiteService } from '../../services/SQLiteService'
+import { createAnalyticsService } from '../../../modules/analytics/services/AnalyticsService'
 import { logger } from '../../../shared/utils/logger'
 
 /**
@@ -21,8 +23,10 @@ import { logger } from '../../../shared/utils/logger'
 const fileSystem = getFileSystemService()
 const backupService = createBackupService(fileSystem)
 const eventBus = createEventBus()
+const sqliteService = getSQLiteService()
+const analyticsService = createAnalyticsService(sqliteService)
 const spaceService = createSpaceService(fileSystem, backupService, eventBus)
-const orchestrator = new ExecutionOrchestrator(eventBus)
+const orchestrator = new ExecutionOrchestrator(eventBus, analyticsService)
 
 /**
  * Register execution IPC handlers

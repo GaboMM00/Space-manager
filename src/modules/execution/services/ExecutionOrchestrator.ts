@@ -15,6 +15,7 @@ import type {
 import { ExecutorFactory } from '../executors/ExecutorFactory'
 import { logger } from '../../../shared/utils/logger'
 import type { EventBus } from '../../../shared/utils/event-bus'
+import type { AnalyticsService } from '../../analytics/services/AnalyticsService'
 
 /**
  * Orchestrates the execution of spaces and their resources
@@ -23,9 +24,11 @@ export class ExecutionOrchestrator {
   private readonly logger = logger
   private readonly factory: ExecutorFactory
   private activeExecutions: Map<string, boolean> = new Map()
+  private executionLogIds: Map<string, number> = new Map()
 
   constructor(
     private eventBus: EventBus,
+    private analyticsService?: AnalyticsService,
     private config: ExecutionConfig = {
       stopOnError: false,
       maxConcurrent: 3,
@@ -66,6 +69,24 @@ export class ExecutionOrchestrator {
 
     this.activeExecutions.set(space.id, true)
 
+    // Record execution start in analytics
+    let executionLogId: number | undefined
+    if (this.analyticsService) {
+      const logResult = await this.analyticsService.recordExecution({
+        spaceId: space.id,
+        spaceName: space.name,
+        startedAt: startTime,
+        success: false,
+        resourcesTotal: context.resources.length,
+        resourcesSuccess: 0,
+        resourcesFailed: 0
+      })
+      if (logResult.success && logResult.data) {
+        executionLogId = logResult.data.id
+        this.executionLogIds.set(space.id, executionLogId)
+      }
+    }
+
     try {
       let results: ResourceExecutionResult[]
 
@@ -95,6 +116,17 @@ export class ExecutionOrchestrator {
         errors: results.filter((r) => r.error).map((r) => r.error!)
       }
 
+      // Update execution log in analytics
+      if (this.analyticsService && executionLogId) {
+        await this.analyticsService.completeExecution(
+          executionLogId,
+          endTime,
+          duration,
+          success,
+          result.errors.length > 0 ? result.errors.join('; ') : undefined
+        )
+      }
+
       // Emit completed event
       this.eventBus.emit('execution:completed', {
         spaceId: space.id,
@@ -118,11 +150,32 @@ export class ExecutionOrchestrator {
     } catch (error) {
       const endTime = Date.now()
       const errorMessage = (error as Error).message
+      const duration = endTime - startTime
 
       this.logger.error(`Execution failed for space: ${space.name}`, {
         spaceId: space.id,
         error
       })
+
+      // Update execution log with error
+      if (this.analyticsService && executionLogId) {
+        await this.analyticsService.completeExecution(
+          executionLogId,
+          endTime,
+          duration,
+          false,
+          errorMessage
+        )
+
+        // Record error in error logs
+        await this.analyticsService.recordError({
+          spaceId: space.id,
+          executionLogId,
+          errorType: 'system_error',
+          errorMessage,
+          stackTrace: (error as Error).stack
+        })
+      }
 
       // Emit failed event
       this.eventBus.emit('execution:failed', {
@@ -134,6 +187,7 @@ export class ExecutionOrchestrator {
       throw error
     } finally {
       this.activeExecutions.delete(space.id)
+      this.executionLogIds.delete(space.id)
     }
   }
 
@@ -266,6 +320,8 @@ export class ExecutionOrchestrator {
       await this.executeWithRetry(() => executor.execute(resource), retryCount)
 
       const endTime = Date.now()
+      const duration = endTime - startTime
+
       const result: ResourceExecutionResult = {
         resourceId: resource.id,
         resourceName: resource.name,
@@ -273,7 +329,18 @@ export class ExecutionOrchestrator {
         success: true,
         startTime: new Date(startTime).toISOString(),
         endTime: new Date(endTime).toISOString(),
-        duration: endTime - startTime
+        duration
+      }
+
+      // Record resource stat in analytics
+      if (this.analyticsService) {
+        await this.analyticsService.updateResourceStat(
+          spaceId,
+          resource.type,
+          resource.path,
+          true,
+          duration
+        )
       }
 
       this.emitResourceCompleted(spaceId, result)
@@ -281,6 +348,7 @@ export class ExecutionOrchestrator {
     } catch (error) {
       const endTime = Date.now()
       const errorMessage = (error as Error).message
+      const duration = endTime - startTime
 
       this.logger.error(`Resource execution failed: ${resource.name}`, {
         spaceId,
@@ -296,7 +364,29 @@ export class ExecutionOrchestrator {
         error: errorMessage,
         startTime: new Date(startTime).toISOString(),
         endTime: new Date(endTime).toISOString(),
-        duration: endTime - startTime
+        duration
+      }
+
+      // Record resource stat and error in analytics
+      if (this.analyticsService) {
+        await this.analyticsService.updateResourceStat(
+          spaceId,
+          resource.type,
+          resource.path,
+          false,
+          duration
+        )
+
+        const executionLogId = this.executionLogIds.get(spaceId)
+        await this.analyticsService.recordError({
+          spaceId,
+          executionLogId,
+          errorType: 'resource_error',
+          errorMessage,
+          stackTrace: (error as Error).stack,
+          resourceType: resource.type,
+          resourcePath: resource.path
+        })
       }
 
       this.emitResourceCompleted(spaceId, result)

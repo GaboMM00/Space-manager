@@ -25,8 +25,20 @@ import {
   TaskFilters,
   TaskStats
 } from '../../modules/tasks/types/task.types'
-// Note: PaginatedResponse and DateRange will be used in future sprints
-// import { PaginatedResponse, DateRange } from './common.types'
+import {
+  SpaceUsageSummary,
+  RecentTrend,
+  TopError,
+  ResourcePerformance,
+  AnalyticsStats,
+  DailyMetric,
+  ResourceStat,
+  ExecutionLog,
+  AnalyticsFilters,
+  DateRange
+} from '../../modules/analytics/types/analytics.types'
+// Note: PaginatedResponse will be used in future sprints
+// import { PaginatedResponse } from './common.types'
 
 /**
  * IPC Channel names
@@ -58,8 +70,15 @@ export const IPC_CHANNELS = {
   TASKS_REORDER: 'tasks:reorder',
 
   // Analytics
-  ANALYTICS_GET_METRICS: 'analytics:getMetrics',
-  ANALYTICS_EXPORT: 'analytics:export',
+  ANALYTICS_SPACE_USAGE: 'analytics:spaceUsage',
+  ANALYTICS_RECENT_TRENDS: 'analytics:recentTrends',
+  ANALYTICS_TOP_ERRORS: 'analytics:topErrors',
+  ANALYTICS_RESOURCE_PERFORMANCE: 'analytics:resourcePerformance',
+  ANALYTICS_STATS: 'analytics:stats',
+  ANALYTICS_DAILY_METRICS: 'analytics:dailyMetrics',
+  ANALYTICS_RESOURCE_STATS: 'analytics:resourceStats',
+  ANALYTICS_EXECUTION_LOGS: 'analytics:executionLogs',
+  ANALYTICS_DELETE_OLD_LOGS: 'analytics:deleteOldLogs',
 
   // Settings
   SETTINGS_GET: 'settings:get',
@@ -172,6 +191,44 @@ export interface IPCInvokeMap {
   [IPC_CHANNELS.TASKS_REORDER]: {
     args: [string[]]
     return: Result<void>
+  }
+
+  // Analytics
+  [IPC_CHANNELS.ANALYTICS_SPACE_USAGE]: {
+    args: []
+    return: Result<SpaceUsageSummary[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_RECENT_TRENDS]: {
+    args: []
+    return: Result<RecentTrend[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_TOP_ERRORS]: {
+    args: []
+    return: Result<TopError[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_RESOURCE_PERFORMANCE]: {
+    args: []
+    return: Result<ResourcePerformance[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_STATS]: {
+    args: [DateRange?]
+    return: Result<AnalyticsStats>
+  }
+  [IPC_CHANNELS.ANALYTICS_DAILY_METRICS]: {
+    args: [string, number?]
+    return: Result<DailyMetric[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_RESOURCE_STATS]: {
+    args: [string]
+    return: Result<ResourceStat[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_EXECUTION_LOGS]: {
+    args: [AnalyticsFilters?]
+    return: Result<ExecutionLog[]>
+  }
+  [IPC_CHANNELS.ANALYTICS_DELETE_OLD_LOGS]: {
+    args: [number?]
+    return: Result<number>
   }
 
   // System

@@ -32,6 +32,23 @@ const api = {
     reorder: (taskIds: string[]) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_REORDER, taskIds)
   },
 
+  // Analytics (Phase 3 Sprint 3.2)
+  analytics: {
+    getSpaceUsage: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_SPACE_USAGE),
+    getRecentTrends: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RECENT_TRENDS),
+    getTopErrors: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_TOP_ERRORS),
+    getResourcePerformance: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RESOURCE_PERFORMANCE),
+    getStats: (dateRange?: any) => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_STATS, dateRange),
+    getDailyMetrics: (spaceId: string, days?: number) =>
+      ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_DAILY_METRICS, spaceId, days),
+    getResourceStats: (spaceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RESOURCE_STATS, spaceId),
+    getExecutionLogs: (filters?: any) =>
+      ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_EXECUTION_LOGS, filters),
+    deleteOldLogs: (daysToKeep?: number) =>
+      ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_DELETE_OLD_LOGS, daysToKeep)
+  },
+
   // Event listeners (Main → Renderer)
   on: (channel: string, callback: (...args: any[]) => void) => {
     const subscription = (_event: any, ...args: any[]) => callback(...args)

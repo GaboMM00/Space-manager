@@ -28,6 +28,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
+    "better-sqlite3": "^11.10.0",
     "clsx": "^2.1.1",
     "react-router-dom": "^7.10.1",
     "tailwind-merge": "^3.4.0"
@@ -37,6 +38,7 @@
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@tailwindcss/postcss": "^4.1.17",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",

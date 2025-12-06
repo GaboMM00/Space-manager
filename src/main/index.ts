@@ -5,6 +5,8 @@ import { registerSystemHandlers } from './ipc/handlers/system-handlers'
 import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
 import { registerExecutionHandlers } from './ipc/handlers/execution-handlers'
 import { registerTaskHandlers } from './ipc/handlers/task-handlers'
+import { registerAnalyticsHandlers } from './ipc/handlers/analytics-handlers'
+import { closeSQLiteConnection } from './services/SQLiteService'
 
 /**
  * Initialize IPC handlers
@@ -24,8 +26,8 @@ function initializeIPC(): void {
   // Register task handlers (Sprint 3.1)
   registerTaskHandlers()
 
-  // TODO: Register other handlers in future sprints
-  // - Analytics handlers (Sprint 3.2)
+  // Register analytics handlers (Sprint 3.2)
+  registerAnalyticsHandlers()
 
   logger.info('IPC handlers initialized successfully')
 }
@@ -105,4 +107,10 @@ app.on('window-all-closed', () => {
     logger.info('All windows closed, quitting app')
     app.quit()
   }
+})
+
+// Cleanup before quitting
+app.on('before-quit', () => {
+  logger.info('App quitting, cleaning up...')
+  closeSQLiteConnection()
 })

@@ -37,6 +37,19 @@ declare global {
         reorder: (taskIds: string[]) => Promise<Result<void>>
       }
 
+      // Analytics (Phase 3 Sprint 3.2)
+      analytics: {
+        getSpaceUsage: () => Promise<Result<any[]>>
+        getRecentTrends: () => Promise<Result<any[]>>
+        getTopErrors: () => Promise<Result<any[]>>
+        getResourcePerformance: () => Promise<Result<any[]>>
+        getStats: (dateRange?: any) => Promise<Result<any>>
+        getDailyMetrics: (spaceId: string, days?: number) => Promise<Result<any[]>>
+        getResourceStats: (spaceId: string) => Promise<Result<any[]>>
+        getExecutionLogs: (filters?: any) => Promise<Result<any[]>>
+        deleteOldLogs: (daysToKeep?: number) => Promise<Result<number>>
+      }
+
       // Event listeners
       on: (channel: string, callback: (...args: any[]) => void) => () => void
       once: (channel: string, callback: (...args: any[]) => void) => void

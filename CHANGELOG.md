@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase 3 Sprint 3.2 (Analytics & Metrics) - 2025-12-05
+
+**SQLite Integration:**
+- Installed better-sqlite3 v11.7.0 (compatible with Electron 32.2.6)
+- Created SQLiteService for database management
+- Automatic schema initialization from SQLITE_SCHEMA.sql
+- Singleton pattern with pragmas configuration (WAL, cache, sync)
+- Cleanup on app quit
+
+**Analytics Types:**
+- 16 types and interfaces for analytics system
+- ExecutionLog, DailyMetric, ResourceStat, ErrorLog, SystemMetric
+- SpaceUsageSummary, RecentTrend, TopError, ResourcePerformance
+- AnalyticsStats, AnalyticsFilters, DateRange
+- CreateExecutionLogInput, CreateErrorLogInput
+
+**AnalyticsService:**
+- Business logic layer for analytics and metrics
+- recordExecution() - Record execution start
+- completeExecution() - Update when execution completes
+- recordError() - Log errors with stack trace and context
+- updateResourceStat() - Track resource performance
+- getExecutionLogs() - Query logs with filters
+- getSpaceUsageSummary() - Summary by space
+- getRecentTrends() - Last 30 days trends
+- getTopErrors() - Top errors last 7 days
+- getResourcePerformance() - Performance by resource type
+- getDailyMetrics() - Daily metrics per space
+- getResourceStats() - Resource stats per space
+- getAnalyticsStats() - General summary statistics
+- deleteOldLogs() - Cleanup old logs (configurable retention)
+
+**Execution Tracking:**
+- Integrated analytics with ExecutionOrchestrator
+- Automatic execution logging on space execution
+- Track success/failure, duration, resources
+- Log errors with detailed context
+- Update resource stats on each resource execution
+- Timestamps in Unix milliseconds
+
+**SQLite Schema:**
+- 5 tables: execution_logs, daily_metrics, resource_stats, error_logs, system_metrics
+- 4 views: v_space_usage_summary, v_recent_trends, v_top_errors, v_resource_performance
+- Automatic triggers for daily_metrics aggregation
+- Optimized indexes for frequent queries
+- Constraints and validations
+
+**IPC Integration:**
+- 9 IPC channels for analytics:
+  - analytics:spaceUsage, analytics:recentTrends, analytics:topErrors
+  - analytics:resourcePerformance, analytics:stats
+  - analytics:dailyMetrics, analytics:resourceStats
+  - analytics:executionLogs, analytics:deleteOldLogs
+- IPC handlers registered in main process
+- Type-safe with IPCInvokeMap
+- Preload API exposure
+- Window types updated
+
+**Files Created:**
+- src/modules/analytics/types/analytics.types.ts (~250 lines)
+- src/modules/analytics/services/AnalyticsService.ts (~600 lines)
+- src/main/services/SQLiteService.ts (~200 lines)
+- src/main/ipc/handlers/analytics-handlers.ts (~140 lines)
+
+**Dependencies:**
+- better-sqlite3: ^11.7.0
+- @types/better-sqlite3: ^7.6.11
+
 ### Added - Phase 3 Sprint 3.1 (Task Management System) - 2025-12-05
 
 **Task System Backend:**
