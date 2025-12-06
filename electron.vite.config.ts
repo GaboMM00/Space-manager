@@ -4,10 +4,21 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks: undefined
+        }
+      }
+    }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      minify: 'esbuild'
+    }
   },
   renderer: {
     resolve: {
@@ -15,6 +26,27 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    build: {
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks(id): string | undefined {
+            // Separate vendor chunks for better caching
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor-react'
+              }
+              if (id.includes('react-router')) {
+                return 'vendor-router'
+              }
+              return 'vendor'
+            }
+            return undefined
+          }
+        }
+      },
+      chunkSizeWarningLimit: 600
+    }
   }
 })

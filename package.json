@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Sistema Modular de Gestión de Espacios de Trabajo Digitales",
   "main": "./out/main/index.js",
+  "type": "commonjs",
   "author": "Space Manager Team",
   "license": "ISC",
   "scripts": {
