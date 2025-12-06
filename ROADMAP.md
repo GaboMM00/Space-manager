@@ -449,8 +449,8 @@ Docs: Updated ROADMAP.md, ARCHITECTURE.md
 
 ## 📊 Estado Actual del Proyecto
 
-**Última Actualización:** 05 de Diciembre 2025 - Sprint 3.2
-**Estado Actual:** ✅ Fase 3 - Sprint 3.2 Completado
+**Última Actualización:** 06 de Diciembre 2025 - Sprint 5.2
+**Estado Actual:** ✅ Fase 5 - Sprint 5.2 Completado | 📅 SIGUIENTE: Sprint 5.3 - UI Integration
 
 ### ✅ Completado
 
@@ -1450,7 +1450,439 @@ See PERFORMANCE.md for detailed optimization report.
 
 ---
 
-## Fase 5.5: Refactorización de Arquitectura (Opcional/Futuro)
+## Fase 5.3: Integración UI de Módulos Avanzados
+
+**Duración Estimada:** 1 semana
+**Estado:** 📅 SIGUIENTE SPRINT
+**Prioridad:** ALTA
+
+**Contexto:**
+Los módulos de Tasks (Sprint 3.1) y Analytics (Sprint 3.2) están implementados a nivel backend pero no están completamente integrados en la interfaz de usuario. Esta fase se enfoca en crear una UI moderna, profesional y completamente funcional para estos módulos.
+
+**Objetivo General:**
+Integrar completamente los módulos avanzados (Tasks y Analytics) en la UI con una experiencia de usuario profesional, moderna y pulida.
+
+---
+
+### Sprint 5.3.1 - Task Management UI Integration
+
+**Objetivo:** Crear interfaz completa para el sistema de gestión de tareas
+
+**Componentes a Crear:**
+
+#### 1. Vista Principal de Tareas (`TasksView.tsx`)
+```typescript
+// src/renderer/src/views/TasksView.tsx
+interface TasksViewProps {
+  spaceId?: string  // Opcional: filtrar por espacio
+}
+```
+
+**Features:**
+- Lista de tareas con estados visuales (pending, in_progress, completed)
+- Filtros avanzados:
+  - Por espacio (dropdown)
+  - Por estado (tabs o chips)
+  - Por prioridad (high, medium, low)
+  - Por fecha (overdue, today, this week)
+  - Búsqueda por texto
+- Ordenamiento:
+  - Por fecha de creación
+  - Por prioridad
+  - Por orden personalizado (drag & drop)
+  - Por fecha de vencimiento
+
+**Layout:**
+```
+┌─────────────────────────────────────────────────┐
+│  Tasks                            [+ New Task]  │
+├─────────────────────────────────────────────────┤
+│  Filters: [All Spaces ▼] [All Status ▼]        │
+│  [🔍 Search tasks...]                           │
+├─────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────┐ │
+│  │ ☐ Task Title                    [High] 🔴│ │
+│  │   Description preview...                  │ │
+│  │   📁 Space Name • 📅 Due: Tomorrow       │ │
+│  └───────────────────────────────────────────┘ │
+│  ┌───────────────────────────────────────────┐ │
+│  │ ☑ Completed Task              [Medium] 🟡│ │
+│  │   Brief description...                    │ │
+│  │   📁 Work • ✓ Completed 2h ago          │ │
+│  └───────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+#### 2. Componente TaskCard (`TaskCard.tsx`)
+**Props:**
+```typescript
+interface TaskCardProps {
+  task: Task
+  onToggleStatus: (taskId: string) => void
+  onEdit: (task: Task) => void
+  onDelete: (taskId: string) => void
+  onReorder?: (taskId: string, newOrder: number) => void
+}
+```
+
+**Visual Design:**
+- Checkbox para toggle status
+- Indicador visual de prioridad (color badge)
+- Título y descripción
+- Metadata: espacio, fechas, etiquetas
+- Acciones rápidas: Edit, Delete
+- Animaciones suaves en hover/click
+- Drag handle para reordering
+
+#### 3. Modal de Creación/Edición (`TaskFormModal.tsx`)
+**Features:**
+- Formulario completo con validación
+- Campos:
+  - ✅ Title (required)
+  - ✅ Description (textarea)
+  - ✅ Space (select dropdown)
+  - ✅ Priority (radio buttons con iconos)
+  - ✅ Status (select)
+  - ✅ Due Date (date picker)
+  - ✅ Tags (multi-input)
+- Validación en tiempo real
+- Preview del task
+- Botones: Cancel, Save
+
+#### 4. Componente de Estadísticas Rápidas (`TaskStats.tsx`)
+**Ubicación:** Top de TasksView
+
+```
+┌──────────────────────────────────────────────────┐
+│  📊 Task Statistics                              │
+│  ┌─────────┬─────────┬─────────┬─────────┐      │
+│  │ Total   │ Pending │ Active  │ Done    │      │
+│  │   42    │   15    │    8    │   19    │      │
+│  └─────────┴─────────┴─────────┴─────────┘      │
+│  ⚠️ 3 tasks overdue                              │
+└──────────────────────────────────────────────────┘
+```
+
+**Data:**
+- Total tasks
+- Breakdown por estado
+- Overdue count (destacado)
+- Completion rate (opcional: progress bar)
+
+#### 5. Integración con Spaces
+**Ubicación:** SpaceDetailView
+
+Añadir tab "Tasks" en la vista de detalle de cada espacio:
+```typescript
+// src/renderer/src/views/SpaceDetailView.tsx
+<Tabs>
+  <Tab label="Overview">...</Tab>
+  <Tab label="Resources">...</Tab>
+  <Tab label="Tasks">
+    <TasksView spaceId={space.id} />
+  </Tab>
+  <Tab label="Analytics">...</Tab>
+</Tabs>
+```
+
+---
+
+### Sprint 5.3.2 - Analytics Dashboard UI Integration
+
+**Objetivo:** Crear dashboard de analytics completo y visualmente atractivo
+
+**Componentes a Crear:**
+
+#### 1. Vista Principal de Analytics (`AnalyticsView.tsx`)
+**Layout:**
+```
+┌─────────────────────────────────────────────────────┐
+│  📊 Analytics Dashboard                             │
+│  [Last 7 days ▼] [All Spaces ▼]     [Export 📥]   │
+├─────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────┐   │
+│  │  Quick Stats                                 │   │
+│  │  ┌──────┬──────┬──────┬──────┐              │   │
+│  │  │Spaces│Tasks │Exec. │Uptime│              │   │
+│  │  │  12  │  42  │ 156  │ 98%  │              │   │
+│  │  └──────┴──────┴──────┴──────┘              │   │
+│  └─────────────────────────────────────────────┘   │
+│                                                     │
+│  ┌─────────────────────────────────────────────┐   │
+│  │  📈 Execution Trends (Last 30 days)         │   │
+│  │  [Chart: Line graph of executions]          │   │
+│  └─────────────────────────────────────────────┘   │
+│                                                     │
+│  ┌──────────────────────┐ ┌────────────────────┐   │
+│  │  Top Spaces          │ │  Recent Activity   │   │
+│  │  1. Work (45 exec)   │ │  • Space executed  │   │
+│  │  2. Dev (32 exec)    │ │  • Task completed  │   │
+│  │  3. Personal (18)    │ │  • Error occurred  │   │
+│  └──────────────────────┘ └────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+#### 2. Tarjetas de Estadísticas (`StatCard.tsx`)
+```typescript
+interface StatCardProps {
+  title: string
+  value: number | string
+  icon: React.ReactNode
+  trend?: { value: number; direction: 'up' | 'down' }
+  color?: 'blue' | 'green' | 'yellow' | 'red'
+}
+```
+
+**Design:**
+- Icono temático
+- Valor principal grande
+- Título descriptivo
+- Trend indicator opcional (↑ 12% desde ayer)
+- Colores según tipo de métrica
+
+#### 3. Gráficos de Tendencias (`TrendsChart.tsx`)
+**Librería sugerida:** Recharts o Chart.js
+
+**Tipos de gráficos:**
+- Line chart: Execuciones por día
+- Bar chart: Tasks completadas por semana
+- Pie chart: Distribución de tareas por estado
+- Area chart: Tiempo de uso acumulado
+
+**Interactividad:**
+- Tooltips con detalles
+- Zoom/pan para periodos largos
+- Selección de rango de fechas
+- Toggle de datasets
+
+#### 4. Tabla de Actividad Reciente (`RecentActivityTable.tsx`)
+```typescript
+interface ActivityLog {
+  timestamp: Date
+  type: 'execution' | 'task_completed' | 'space_created' | 'error'
+  description: string
+  metadata?: Record<string, any>
+}
+```
+
+**Columns:**
+- Timestamp (relative: "2 hours ago")
+- Type (con icono)
+- Description
+- Related entity (link a space/task)
+
+#### 5. Exportación de Datos (`ExportButton.tsx`)
+**Formatos:**
+- CSV (para Excel)
+- JSON (para procesamiento)
+- PDF (reporte visual)
+
+**Datos exportables:**
+- Task statistics
+- Execution logs
+- Space metrics
+- Time range configurable
+
+#### 6. Integración con Spaces
+Añadir mini analytics widget en cada SpaceCard:
+```typescript
+// src/renderer/src/components/SpaceCard.tsx
+<SpaceCard>
+  {/* ... existing content ... */}
+  <div className="analytics-preview">
+    <span>📊 {executionCount} executions</span>
+    <span>✓ {completedTasks}/{totalTasks} tasks</span>
+  </div>
+</SpaceCard>
+```
+
+---
+
+### Sprint 5.3.3 - UX Refinement & Polish
+
+**Objetivo:** Pulir la experiencia de usuario y añadir detalles profesionales
+
+**Tareas:**
+
+#### 1. Navegación y Routing
+- [ ] Añadir rutas para `/tasks` y `/analytics`
+- [ ] Actualizar sidebar navigation con iconos
+- [ ] Breadcrumbs para navegación contextual
+- [ ] Keyboard shortcuts:
+  - `Ctrl+K`: Quick task creation
+  - `Ctrl+/`: Search tasks
+  - `Ctrl+D`: Dashboard analytics
+
+#### 2. Loading States & Skeletons
+- [ ] Skeleton screens para carga inicial
+- [ ] Spinners para acciones async
+- [ ] Progress indicators para operaciones largas
+- [ ] Optimistic UI updates
+
+#### 3. Empty States
+- [ ] Vista vacía para "No tasks yet"
+- [ ] Ilustraciones SVG personalizadas
+- [ ] CTAs claros para primera acción
+- [ ] Onboarding hints
+
+#### 4. Error Handling UI
+- [ ] Toast notifications para éxito/error
+- [ ] Error boundaries con recovery
+- [ ] Retry mechanisms
+- [ ] Offline state detection
+
+#### 5. Animations & Transitions
+- [ ] Fade in/out para modals
+- [ ] Slide animations para panels
+- [ ] Micro-interactions en botones
+- [ ] List item animations (Framer Motion)
+
+#### 6. Responsive Design
+- [ ] Mobile-friendly layouts (aunque es desktop app)
+- [ ] Sidebar collapse/expand
+- [ ] Resizable panels
+- [ ] Overflow handling
+
+#### 7. Accessibility (a11y)
+- [ ] ARIA labels completos
+- [ ] Keyboard navigation
+- [ ] Focus management
+- [ ] Screen reader support
+- [ ] Color contrast compliance (WCAG AA)
+
+#### 8. Theme & Styling
+- [ ] Consistent spacing (Tailwind scale)
+- [ ] Color palette refinement
+- [ ] Typography hierarchy
+- [ ] Dark mode support (opcional)
+
+---
+
+### Estructura de Archivos Propuesta
+
+```
+src/renderer/src/
+├── views/
+│   ├── TasksView.tsx          ← New
+│   ├── AnalyticsView.tsx      ← New
+│   └── SpaceDetailView.tsx    ← Update (añadir tabs)
+├── components/
+│   ├── tasks/
+│   │   ├── TaskCard.tsx           ← New
+│   │   ├── TaskFormModal.tsx      ← New
+│   │   ├── TaskStats.tsx          ← New
+│   │   ├── TaskFilters.tsx        ← New
+│   │   └── TaskList.tsx           ← New
+│   ├── analytics/
+│   │   ├── StatCard.tsx           ← New
+│   │   ├── TrendsChart.tsx        ← New
+│   │   ├── RecentActivityTable.tsx ← New
+│   │   ├── ExportButton.tsx       ← New
+│   │   └── AnalyticsDashboard.tsx ← New
+│   ├── shared/
+│   │   ├── EmptyState.tsx         ← New
+│   │   ├── LoadingSkeleton.tsx    ← New
+│   │   └── ErrorBoundary.tsx      ← Update
+│   └── layout/
+│       └── Sidebar.tsx            ← Update (añadir links)
+├── hooks/
+│   ├── useTasks.ts                ← New
+│   ├── useAnalytics.ts            ← New
+│   └── useTaskFilters.ts          ← New
+└── types/
+    ├── task.types.ts              ← Import from backend
+    └── analytics.types.ts         ← Import from backend
+```
+
+---
+
+### Dependencias Adicionales Sugeridas
+
+```json
+{
+  "devDependencies": {
+    "framer-motion": "^11.0.0",      // Animations
+    "recharts": "^2.12.0",           // Charts
+    "date-fns": "^3.0.0",            // Date formatting
+    "react-hot-toast": "^2.4.1",    // Toast notifications
+    "react-day-picker": "^8.10.0"   // Date picker
+  }
+}
+```
+
+---
+
+### Criterios de Aceptación
+
+**Sprint 5.3 se considera completo cuando:**
+
+✅ **Funcionalidad:**
+- [ ] Todas las operaciones CRUD de tasks funcionan desde UI
+- [ ] Todos los filtros y búsquedas operativos
+- [ ] Analytics dashboard muestra datos reales de SQLite
+- [ ] Exportación de datos funcional
+
+✅ **UX/UI:**
+- [ ] Diseño consistente con sistema de diseño
+- [ ] Animaciones suaves y profesionales
+- [ ] Loading states en todas las operaciones async
+- [ ] Error handling visible y útil
+
+✅ **Performance:**
+- [ ] Lista de tasks renderiza <100ms para 100+ items
+- [ ] Charts cargan datos en <500ms
+- [ ] No memory leaks en navegación
+- [ ] Smooth 60fps animations
+
+✅ **Calidad:**
+- [ ] TypeScript sin errores
+- [ ] Componentes reutilizables y modulares
+- [ ] Código comentado en secciones complejas
+- [ ] No console.errors en runtime
+
+---
+
+**Commit sugerido al finalizar Sprint 5.3:**
+```bash
+feat(ui): implement Phase 5 Sprint 5.3 - Advanced Modules UI Integration
+
+Complete UI integration for Tasks and Analytics modules:
+
+Tasks Management:
+- Created TasksView with filtering, sorting, search
+- Implemented TaskCard with drag-drop reordering
+- Added TaskFormModal for CRUD operations
+- Integrated task stats dashboard
+- Added tasks tab to SpaceDetailView
+
+Analytics Dashboard:
+- Built comprehensive AnalyticsView
+- Implemented StatCard components with trends
+- Created interactive charts (Recharts)
+- Added RecentActivityTable with real-time updates
+- Implemented data export (CSV, JSON, PDF)
+
+UX Enhancements:
+- Added loading skeletons and empty states
+- Implemented toast notifications (react-hot-toast)
+- Added smooth animations (framer-motion)
+- Improved keyboard navigation
+- Enhanced accessibility (ARIA labels, focus management)
+
+New Dependencies:
+- framer-motion: ^11.0.0
+- recharts: ^2.12.0
+- date-fns: ^3.0.0
+- react-hot-toast: ^2.4.1
+- react-day-picker: ^8.10.0
+
+All advanced backend features now accessible through modern,
+professional UI with excellent UX.
+```
+
+---
+
+## Fase 5.5: Refactorización de Arquitectura
 
 **Duración Estimada:** 1-2 semanas
 **Estado:** 📅 PLANEADA (Baja Prioridad)

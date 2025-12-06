@@ -4,8 +4,6 @@
  * Phase 3 Sprint 3.1 - Task Management System
  */
 
-import { join } from 'path'
-import { app } from 'electron'
 import { BaseRepository } from '../../../main/services/DataStoreService'
 import { FileSystemService } from '../../../main/services/FileSystemService'
 import type { Task } from '../types/task.types'
@@ -16,6 +14,8 @@ import taskSchema from '../../../main/schemas/task.schema.json'
  * Manages task data persistence
  */
 export class TaskRepository extends BaseRepository<Task> {
+  private static readonly TASK_FILE_PATH = 'data/tasks.json'
+
   constructor(fileSystem: FileSystemService) {
     super(fileSystem, taskSchema)
   }
@@ -24,8 +24,7 @@ export class TaskRepository extends BaseRepository<Task> {
    * Get file path for tasks data store
    */
   protected getFilePath(): string {
-    const userDataPath = app.getPath('userData')
-    return join(userDataPath, 'tasks.json')
+    return TaskRepository.TASK_FILE_PATH
   }
 
   /**

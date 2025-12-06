@@ -4,7 +4,6 @@
  * Phase 3 Sprint 3.1 - Task Management System
  */
 
-import { randomUUID } from 'crypto'
 import { logger } from '../../../shared/utils/logger'
 import { EventBus } from '../../../shared/utils/event-bus'
 import { Result } from '../../../shared/types/common.types'
@@ -107,23 +106,24 @@ export class TaskService {
     try {
       logger.debug('Creating task', { spaceId: data.spaceId, title: data.title })
 
-      const now = new Date().toISOString()
-      const task: Task = {
-        ...data,
-        id: randomUUID(),
-        createdAt: now,
-        updatedAt: now,
-        subtasks: [],
-        reminders: []
+      // Use repository's create method with the data only (without base entity fields)
+      const result = await this.repository.create(data as any)
+
+      if (!result.success) {
+        return {
+          success: false,
+          error: result.error || 'Failed to save task'
+        }
       }
 
-      await this.repository.create(task)
+      // Use the task returned by repository (with its generated ID and timestamps)
+      const createdTask = result.data!
 
       // Emit event
-      this.eventBus.emit('task:created', task)
+      this.eventBus.emit('task:created', createdTask)
 
-      logger.info('Task created successfully', { id: task.id })
-      return { success: true, data: task }
+      logger.info('Task created successfully', { id: createdTask.id })
+      return { success: true, data: createdTask }
     } catch (error) {
       logger.error('Failed to create task', error)
       return {

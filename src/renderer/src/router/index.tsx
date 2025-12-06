@@ -9,6 +9,7 @@ import { RootLayout } from '../layouts/RootLayout'
 import { DashboardView } from '../views/Dashboard/DashboardView'
 import { SpaceEditorView } from '../views/SpaceEditor/SpaceEditorView'
 import { SettingsView } from '../views/Settings/SettingsView'
+import { TasksView } from '../views/Tasks/TasksView'
 
 /**
  * Application router configuration
@@ -34,6 +35,10 @@ export const router = createHashRouter([
       {
         path: 'spaces/:spaceId/edit',
         element: <SpaceEditorView />
+      },
+      {
+        path: 'tasks',
+        element: <TasksView />
       },
       {
         path: 'settings',

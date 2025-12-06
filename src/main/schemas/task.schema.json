@@ -36,7 +36,7 @@
         },
         "spaceId": {
           "type": "string",
-          "format": "uuid",
+          "minLength": 1,
           "description": "ID of the space this task belongs to"
         },
         "title": {
@@ -62,7 +62,7 @@
         },
         "dueDate": {
           "type": "string",
-          "format": "date",
+          "format": "date-time",
           "description": "Optional due date in ISO 8601 format"
         },
         "completedAt": {
