@@ -449,8 +449,8 @@ Docs: Updated ROADMAP.md, ARCHITECTURE.md
 
 ## 📊 Estado Actual del Proyecto
 
-**Última Actualización:** 05 de Diciembre 2025 - Sprint 2.3
-**Estado Actual:** ✅ Fase 2 - Sprint 2.3 Completado
+**Última Actualización:** 05 de Diciembre 2025 - Sprint 3.1
+**Estado Actual:** ✅ Fase 3 - Sprint 3.1 Completado
 
 ### ✅ Completado
 
@@ -1152,13 +1152,78 @@ feat(ui): implement Phase 2 Sprint 2.3 - UX & Accessibility
 ## Fase 3: Módulos Avanzados
 
 **Duración Estimada:** 3 semanas
-**Estado:** 📅 PLANEADA
+**Estado:** 🚀 EN PROGRESO
 
-### Sprint 3.1 - Sistema de Tareas
+### Sprint 3.1 - Sistema de Tareas ✅ COMPLETADO (05/12/2025)
+
+**Objetivo:** Implementar sistema completo de gestión de tareas tipo checklist
+
+**Tareas:**
+- [x] Crear tipos e interfaces para Task (TaskStatus, TaskPriority, Reminder)
+- [x] Implementar JSON Schema de validación
+- [x] Crear TaskRepository con BaseRepository
+- [x] Implementar TaskService con CRUD completo
+- [x] Crear IPC handlers para tasks
+- [x] Integrar con sistema IPC (channels, preload, window types)
+- [x] TypeScript sin errores (0 errores de compilación)
+
+**Archivos creados:**
+```
+src/modules/tasks/
+├── types/
+│   └── task.types.ts              # Tipos Task, enums, filters, stats
+├── repositories/
+│   └── TaskRepository.ts          # BaseRepository para tasks
+└── services/
+    └── TaskService.ts             # Business logic CRUD
+src/main/
+├── ipc/handlers/
+│   └── task-handlers.ts           # 8 IPC handlers
+└── schemas/
+    └── task.schema.json           # Schema validación actualizado
+```
+
+**Funcionalidades implementadas:**
+- CRUD completo de tareas (create, read, update, delete)
+- Toggle de status (pending ↔ completed)
+- Filtrado por: space, status, priority, search, fechas
+- Ordenamiento de tareas
+- Estadísticas de tareas por espacio (total, completed, pending, etc.)
+- Sistema de prioridades (low, medium, high)
+- Estados de tarea (pending, in_progress, completed, cancelled)
+- Soporte para subtareas anidadas (preparado)
+- Soporte para reminders (preparado)
+- Event bus para eventos de tareas
+
+**IPC Channels implementados:**
+- `tasks:create` - Crear tarea
+- `tasks:update` - Actualizar tarea
+- `tasks:delete` - Eliminar tarea
+- `tasks:get` - Obtener tarea por ID
+- `tasks:list` - Listar tareas con filtros
+- `tasks:toggle` - Toggle status
+- `tasks:stats` - Estadísticas por espacio
+- `tasks:reorder` - Reordenar tareas
+
+**Criterios de aceptación:**
+- [x] TypeScript sin errores (0 errores)
+- [x] Arquitectura siguiendo patrón del proyecto (BaseRepository + Service)
+- [x] IPC handlers registrados correctamente
+- [x] Validación con JSON Schema
+- [x] Event bus integrado
+- [x] Logger integrado
+- [x] Tipos exportados correctamente
+
+**Notas de implementación:**
+- Total líneas de código: ~650 líneas
+- Arquitectura: BaseRepository pattern + Service layer
+- Factory function para TaskService
+- Uso correcto de logger (instancia, no clase)
+- TaskStatus como enum para runtime y type checking
 
 **Commit sugerido:**
 ```bash
-feat(tasks): implement Phase 3 Sprint 1 - Task Management System
+feat(tasks): implement Phase 3 Sprint 3.1 - Task Management System
 ```
 
 ---

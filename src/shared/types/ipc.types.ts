@@ -18,6 +18,13 @@ import {
   ExecutionResult as ModuleExecutionResult,
   ExecutionProgress as ModuleExecutionProgress
 } from '../../modules/execution/types/execution.types'
+import {
+  Task,
+  CreateTaskInput,
+  UpdateTaskInput,
+  TaskFilters,
+  TaskStats
+} from '../../modules/tasks/types/task.types'
 // Note: PaginatedResponse and DateRange will be used in future sprints
 // import { PaginatedResponse, DateRange } from './common.types'
 
@@ -44,8 +51,11 @@ export const IPC_CHANNELS = {
   TASKS_CREATE: 'tasks:create',
   TASKS_UPDATE: 'tasks:update',
   TASKS_DELETE: 'tasks:delete',
+  TASKS_GET: 'tasks:get',
   TASKS_LIST: 'tasks:list',
   TASKS_TOGGLE: 'tasks:toggle',
+  TASKS_STATS: 'tasks:stats',
+  TASKS_REORDER: 'tasks:reorder',
 
   // Analytics
   ANALYTICS_GET_METRICS: 'analytics:getMetrics',
@@ -128,6 +138,40 @@ export interface IPCInvokeMap {
   [IPC_CHANNELS.SPACES_EXECUTE]: {
     args: [string]
     return: Result<ModuleExecutionResult>
+  }
+
+  // Tasks
+  [IPC_CHANNELS.TASKS_CREATE]: {
+    args: [CreateTaskInput]
+    return: Result<Task>
+  }
+  [IPC_CHANNELS.TASKS_UPDATE]: {
+    args: [string, UpdateTaskInput]
+    return: Result<Task>
+  }
+  [IPC_CHANNELS.TASKS_DELETE]: {
+    args: [string]
+    return: Result<void>
+  }
+  [IPC_CHANNELS.TASKS_GET]: {
+    args: [string]
+    return: Result<Task>
+  }
+  [IPC_CHANNELS.TASKS_LIST]: {
+    args: [TaskFilters?]
+    return: Result<Task[]>
+  }
+  [IPC_CHANNELS.TASKS_TOGGLE]: {
+    args: [string]
+    return: Result<Task>
+  }
+  [IPC_CHANNELS.TASKS_STATS]: {
+    args: [string]
+    return: Result<TaskStats>
+  }
+  [IPC_CHANNELS.TASKS_REORDER]: {
+    args: [string[]]
+    return: Result<void>
   }
 
   // System

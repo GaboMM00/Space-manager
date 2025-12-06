@@ -7,6 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase 3 Sprint 3.1 (Task Management System) - 2025-12-05
+
+**Task System Backend:**
+- Implemented complete task management system with CRUD operations
+- Created Task types and interfaces:
+  - Task, TaskStatus, TaskPriority, Reminder
+  - CreateTaskInput, UpdateTaskInput, TaskFilters, TaskStats
+- TaskRepository using BaseRepository pattern for data persistence
+- TaskService with business logic layer
+- JSON Schema validation for tasks
+
+**Task Operations:**
+- Create task with full metadata (title, description, priority, due date, etc.)
+- Read task by ID or list with filters
+- Update task with automatic completedAt timestamp
+- Delete task with cascade handling
+- Toggle task status (pending ↔ completed)
+- Reorder tasks with order field
+- Get task statistics (total, completed, pending, overdue, completion rate)
+
+**Filtering System:**
+- Filter by space ID, status, priority
+- Search by title/description
+- Filter by due date (before/after)
+- Automatic sorting by order field
+
+**IPC Integration:**
+- 8 IPC channels implemented:
+  - tasks:create, tasks:update, tasks:delete
+  - tasks:get, tasks:list, tasks:toggle
+  - tasks:stats, tasks:reorder
+- IPC handlers registered in main process
+- Type-safe IPC communication with IPCInvokeMap
+- Preload API exposure for renderer process
+- Window types updated with tasks API
+
+**Data Model:**
+- TaskStatus enum: pending, in_progress, completed, cancelled
+- TaskPriority enum: low, medium, high
+- Support for nested subtasks (structure ready)
+- Support for reminders (structure ready)
+- Calendar event integration field (calendarEventId)
+
+**Event System:**
+- Event bus integration for task events
+- task:created, task:updated, task:deleted events
+
+**Architecture:**
+- BaseRepository pattern for data access
+- Service layer for business logic
+- Factory function for TaskService instantiation
+- Logger integration for debugging and monitoring
+- Result type for error handling
+
+**Files Created (5 files, ~650 lines):**
+```
+src/modules/tasks/
+├── types/task.types.ts
+├── repositories/TaskRepository.ts
+└── services/TaskService.ts
+src/main/ipc/handlers/task-handlers.ts
+src/main/schemas/task.schema.json (updated)
+```
+
+**Modified Files:**
+- `src/shared/types/ipc.types.ts` - Added Task imports and IPCInvokeMap entries
+- `src/main/index.ts` - Registered task handlers
+- `src/preload/index.ts` - Added tasks API
+- `src/renderer/src/types/window.d.ts` - Added tasks types
+
+**TypeScript Compliance:**
+- 0 compilation errors
+- Full type safety across task system
+- Enum properly used for runtime values
+
+**Technical Notes:**
+- Used BaseRepository instead of DataStoreService following project pattern
+- Used logger instance instead of Logger.getInstance()
+- TaskStatus enum imported without `type` for runtime usage
+- Event bus for decoupled architecture
+
+---
+
 ### Added - Phase 2 Sprint 2.3 (UX & Accessibility) - 2025-12-05
 
 **Toast Notification System:**

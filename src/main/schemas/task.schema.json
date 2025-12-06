@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://spacemanager.app/schemas/task.schema.json",
   "title": "Task Data Store",
-  "description": "JSON Schema for Task data store file",
+  "description": "JSON Schema for Task checklist data store file",
   "type": "object",
   "required": ["version", "lastModified", "items"],
   "properties": {
@@ -27,69 +27,102 @@
   "definitions": {
     "Task": {
       "type": "object",
-      "required": ["id", "spaceId", "name", "enabled", "status", "createdAt", "updatedAt"],
+      "required": ["id", "spaceId", "title", "status", "priority", "order", "createdAt", "updatedAt"],
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1,
+          "format": "uuid",
           "description": "Unique task identifier"
         },
         "spaceId": {
           "type": "string",
-          "minLength": 1,
-          "description": "Associated space identifier"
+          "format": "uuid",
+          "description": "ID of the space this task belongs to"
         },
-        "name": {
+        "title": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 100,
-          "description": "Task name"
+          "maxLength": 200,
+          "description": "Task title"
         },
         "description": {
           "type": "string",
-          "maxLength": 500,
-          "description": "Task description (optional)"
-        },
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this task is enabled"
-        },
-        "schedule": {
-          "type": "object",
-          "description": "Task schedule configuration (optional)",
-          "required": ["type", "value"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["once", "daily", "weekly", "monthly", "cron"],
-              "description": "Schedule type"
-            },
-            "value": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Schedule value (depends on type)"
-            },
-            "timezone": {
-              "type": "string",
-              "description": "Timezone (e.g., 'America/New_York') (optional)"
-            }
-          },
-          "additionalProperties": false
-        },
-        "lastRunAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Last execution timestamp (optional)"
-        },
-        "nextRunAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Next scheduled execution timestamp (optional)"
+          "maxLength": 1000,
+          "description": "Optional task description"
         },
         "status": {
           "type": "string",
-          "enum": ["pending", "running", "completed", "failed", "disabled"],
-          "description": "Current task status"
+          "enum": ["pending", "in_progress", "completed", "cancelled"],
+          "description": "Current status of the task"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Task priority level"
+        },
+        "dueDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Optional due date in ISO 8601 format"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when task was completed"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Display order within the space"
+        },
+        "subtasks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Task"
+          },
+          "description": "Nested subtasks"
+        },
+        "reminders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Reminder"
+          },
+          "description": "Task reminders"
+        },
+        "calendarEventId": {
+          "type": "string",
+          "description": "External calendar event ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Reminder": {
+      "type": "object",
+      "required": ["id", "dateTime", "notified", "createdAt", "updatedAt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique reminder identifier"
+        },
+        "dateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Reminder date and time"
+        },
+        "notified": {
+          "type": "boolean",
+          "description": "Whether notification was sent"
         },
         "createdAt": {
           "type": "string",

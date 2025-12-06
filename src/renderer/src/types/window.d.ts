@@ -15,7 +15,7 @@ declare global {
         getInfo: () => Promise<Result<SystemInfo>>
       }
 
-      // Spaces (placeholder for Phase 1 Sprint 1.3)
+      // Spaces
       spaces: {
         create: (data: any) => Promise<Result<any>>
         update: (id: string, data: any) => Promise<Result<any>>
@@ -23,6 +23,18 @@ declare global {
         get: (id: string) => Promise<Result<any>>
         list: (filters?: any) => Promise<Result<any[]>>
         execute: (id: string) => Promise<Result<any>>
+      }
+
+      // Tasks (Phase 3 Sprint 3.1)
+      tasks: {
+        create: (data: any) => Promise<Result<any>>
+        update: (id: string, data: any) => Promise<Result<any>>
+        delete: (id: string) => Promise<Result<void>>
+        get: (id: string) => Promise<Result<any>>
+        list: (filters?: any) => Promise<Result<any[]>>
+        toggle: (id: string) => Promise<Result<any>>
+        stats: (spaceId: string) => Promise<Result<any>>
+        reorder: (taskIds: string[]) => Promise<Result<void>>
       }
 
       // Event listeners

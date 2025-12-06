@@ -4,6 +4,7 @@ import { logger } from '../shared/utils/logger'
 import { registerSystemHandlers } from './ipc/handlers/system-handlers'
 import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
 import { registerExecutionHandlers } from './ipc/handlers/execution-handlers'
+import { registerTaskHandlers } from './ipc/handlers/task-handlers'
 
 /**
  * Initialize IPC handlers
@@ -20,8 +21,10 @@ function initializeIPC(): void {
   // Register execution handlers
   registerExecutionHandlers()
 
+  // Register task handlers (Sprint 3.1)
+  registerTaskHandlers()
+
   // TODO: Register other handlers in future sprints
-  // - Task handlers (Sprint 3.1)
   // - Analytics handlers (Sprint 3.2)
 
   logger.info('IPC handlers initialized successfully')

@@ -10,7 +10,7 @@ const api = {
     getInfo: () => ipcRenderer.invoke(IPC_CHANNELS.SYSTEM_INFO)
   },
 
-  // Spaces (placeholder for Phase 1 Sprint 1.3)
+  // Spaces
   spaces: {
     create: (data: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_CREATE, data),
     update: (id: string, data: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_UPDATE, id, data),
@@ -18,6 +18,18 @@ const api = {
     get: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_GET, id),
     list: (filters?: any) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_LIST, filters),
     execute: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.SPACES_EXECUTE, id)
+  },
+
+  // Tasks (Phase 3 Sprint 3.1)
+  tasks: {
+    create: (data: any) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_CREATE, data),
+    update: (id: string, data: any) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_UPDATE, id, data),
+    delete: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_DELETE, id),
+    get: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_GET, id),
+    list: (filters?: any) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_LIST, filters),
+    toggle: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_TOGGLE, id),
+    stats: (spaceId: string) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_STATS, spaceId),
+    reorder: (taskIds: string[]) => ipcRenderer.invoke(IPC_CHANNELS.TASKS_REORDER, taskIds)
   },
 
   // Event listeners (Main → Renderer)
