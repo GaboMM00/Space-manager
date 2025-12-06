@@ -1362,13 +1362,47 @@ feat(automation): implement Phase 4 Sprint 2 - Advanced Automation
 ## Fase 5: Testing y Optimización
 
 **Duración Estimada:** 2 semanas
-**Estado:** 📅 PLANEADA
+**Estado:** 🚧 EN PROGRESO
 
 ### Sprint 5.1 - Testing Integral
 
+**Objetivo:** Alcanzar coverage ≥80%
+**Estado:** 🚧 EN PROGRESO
+
+**Testing Stack:**
+- **Unit Tests**: Node.js Native Test Runner + tsx
+- **E2E Tests**: Playwright
+- **Component Tests**: @testing-library/react
+- **Mocking**: Node.js native mock API
+
+**Nota Técnica:**
+Migrado de Vitest a Node.js Test Runner debido a incompatibilidades de Vitest 4.x con electron-vite. Ver [TESTING.md](./TESTING.md) para detalles.
+
+**Progreso:**
+- ✅ Testing stack configurado
+- ✅ Dependencias instaladas (Playwright, Testing Library, tsx)
+- ✅ Estructura de directorios creada
+- ✅ Ejemplo de test TaskService.spec.ts
+- ✅ Documentación de testing (TESTING.md)
+- ⚠️ Tests requieren refactorización de servicios para dependency injection
+
+**Pendiente:**
+- Refactor servicios para soportar DI
+- Tests para Analytics, SQLite, ExecutionOrchestrator
+- Tests de integración
+- Coverage reporting
+
 **Commit sugerido:**
 ```bash
-test(project): implement Phase 5 Sprint 1 - Comprehensive Testing
+test(infrastructure): configure testing stack with Node.js Test Runner and Playwright
+
+- Migrated from Vitest to Node.js Test Runner
+- Installed Playwright for E2E testing
+- Created comprehensive testing documentation (TESTING.md)
+- Added example TaskService unit tests
+- Configured test scripts in package.json
+
+See TESTING.md for detailed testing guide.
 ```
 
 ---
