@@ -15,6 +15,8 @@ import { createEventBus } from '../../../shared/utils/event-bus'
 import { createSpaceService } from '../../../modules/workspace/services/SpaceService'
 import { getSQLiteService } from '../../services/SQLiteService'
 import { createAnalyticsService } from '../../../modules/analytics/services/AnalyticsService'
+import { SpaceRepository } from '../../../modules/workspace/repositories/SpaceRepository'
+import { TaskRepository } from '../../../modules/tasks/repositories/TaskRepository'
 import { logger } from '../../../shared/utils/logger'
 
 /**
@@ -24,7 +26,9 @@ const fileSystem = getFileSystemService()
 const backupService = createBackupService(fileSystem)
 const eventBus = createEventBus()
 const sqliteService = getSQLiteService()
-const analyticsService = createAnalyticsService(sqliteService)
+const spaceRepository = new SpaceRepository(fileSystem)
+const taskRepository = new TaskRepository(fileSystem)
+const analyticsService = createAnalyticsService(sqliteService, spaceRepository, taskRepository)
 const spaceService = createSpaceService(fileSystem, backupService, eventBus)
 const orchestrator = new ExecutionOrchestrator(eventBus, analyticsService)
 

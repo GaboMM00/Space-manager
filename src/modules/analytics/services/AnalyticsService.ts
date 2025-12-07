@@ -7,6 +7,8 @@
 import { logger } from '../../../shared/utils/logger'
 import { Result } from '../../../shared/types/common.types'
 import { SQLiteService } from '../../../main/services/SQLiteService'
+import { SpaceRepository } from '../../workspace/repositories/SpaceRepository'
+import { TaskRepository } from '../../tasks/repositories/TaskRepository'
 import {
   ExecutionLog,
   CreateExecutionLogInput,
@@ -28,9 +30,17 @@ import {
  */
 export class AnalyticsService {
   private db: SQLiteService
+  private spaceRepository: SpaceRepository
+  private taskRepository: TaskRepository
 
-  constructor(db: SQLiteService) {
+  constructor(
+    db: SQLiteService,
+    spaceRepository: SpaceRepository,
+    taskRepository: TaskRepository
+  ) {
     this.db = db
+    this.spaceRepository = spaceRepository
+    this.taskRepository = taskRepository
     logger.info('AnalyticsService initialized')
   }
 
@@ -39,7 +49,12 @@ export class AnalyticsService {
    */
   async recordExecution(data: CreateExecutionLogInput): Promise<Result<ExecutionLog>> {
     try {
-      logger.debug('Recording execution', { spaceId: data.spaceId })
+      logger.info('Recording execution START', {
+        spaceId: data.spaceId,
+        spaceName: data.spaceName,
+        startedAt: data.startedAt,
+        resourcesTotal: data.resourcesTotal
+      })
 
       const result = this.db.run(
         `
@@ -62,19 +77,39 @@ export class AnalyticsService {
         ]
       )
 
-      const executionLog = this.db.get<ExecutionLog>(
+      const row = this.db.get<any>(
         'SELECT * FROM execution_logs WHERE id = ?',
         [result.lastInsertRowid]
       )
 
-      if (!executionLog) {
+      if (!row) {
         return {
           success: false,
           error: 'Failed to retrieve created execution log'
         }
       }
 
-      logger.info('Execution recorded successfully', { id: executionLog.id })
+      // Convert snake_case to camelCase
+      const executionLog: ExecutionLog = {
+        id: row.id,
+        spaceId: row.space_id,
+        spaceName: row.space_name,
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        durationMs: row.duration_ms,
+        success: Boolean(row.success),
+        errorMessage: row.error_message,
+        resourcesTotal: row.resources_total,
+        resourcesSuccess: row.resources_success,
+        resourcesFailed: row.resources_failed,
+        createdAt: row.created_at
+      }
+
+      logger.info('Execution recorded successfully', {
+        id: executionLog.id,
+        spaceId: executionLog.spaceId,
+        spaceName: executionLog.spaceName
+      })
       return { success: true, data: executionLog }
     } catch (error) {
       logger.error('Failed to record execution', error)
@@ -107,16 +142,85 @@ export class AnalyticsService {
         [completedAt, durationMs, success ? 1 : 0, errorMessage || null, id]
       )
 
-      const executionLog = this.db.get<ExecutionLog>(
+      const row = this.db.get<any>(
         'SELECT * FROM execution_logs WHERE id = ?',
         [id]
       )
 
-      if (!executionLog) {
+      if (!row) {
         return {
           success: false,
           error: `Execution log not found with id: ${id}`
         }
+      }
+
+      // Manually update daily_metrics (workaround for trigger not firing)
+      const date = new Date(row.started_at)
+      const dateInt = parseInt(
+        `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`
+      )
+
+      logger.debug('Updating daily_metrics manually', {
+        spaceId: row.space_id,
+        date: dateInt,
+        success: row.success,
+        durationMs: row.duration_ms
+      })
+
+      this.db.run(
+        `
+        INSERT INTO daily_metrics (
+          space_id, date, execution_count, success_count, failure_count,
+          total_duration_ms, avg_duration_ms, min_duration_ms, max_duration_ms, updated_at
+        ) VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(space_id, date) DO UPDATE SET
+          execution_count = execution_count + 1,
+          success_count = success_count + ?,
+          failure_count = failure_count + ?,
+          total_duration_ms = total_duration_ms + ?,
+          avg_duration_ms = CAST((total_duration_ms + ?) AS REAL) / (execution_count + 1),
+          min_duration_ms = MIN(COALESCE(min_duration_ms, ?), ?),
+          max_duration_ms = MAX(COALESCE(max_duration_ms, ?), ?),
+          updated_at = ?
+      `,
+        [
+          row.space_id,
+          dateInt,
+          row.success, // success_count for INSERT
+          row.success === 0 ? 1 : 0, // failure_count for INSERT
+          row.duration_ms || 0, // total_duration_ms for INSERT
+          row.duration_ms || 0, // avg_duration_ms for INSERT
+          row.duration_ms, // min_duration_ms for INSERT
+          row.duration_ms, // max_duration_ms for INSERT
+          completedAt, // updated_at for INSERT
+          row.success, // success_count for UPDATE
+          row.success === 0 ? 1 : 0, // failure_count for UPDATE
+          row.duration_ms || 0, // total_duration_ms for UPDATE
+          row.duration_ms || 0, // for avg calculation
+          row.duration_ms, // for min comparison
+          row.duration_ms, // for min value
+          row.duration_ms, // for max comparison
+          row.duration_ms, // for max value
+          completedAt // updated_at for UPDATE
+        ]
+      )
+
+      logger.info('Daily metrics updated manually', { spaceId: row.space_id, date: dateInt })
+
+      // Convert snake_case to camelCase
+      const executionLog: ExecutionLog = {
+        id: row.id,
+        spaceId: row.space_id,
+        spaceName: row.space_name,
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        durationMs: row.duration_ms,
+        success: Boolean(row.success),
+        errorMessage: row.error_message,
+        resourcesTotal: row.resources_total,
+        resourcesSuccess: row.resources_success,
+        resourcesFailed: row.resources_failed,
+        createdAt: row.created_at
       }
 
       logger.info('Execution completed successfully', { id })
@@ -271,6 +375,7 @@ export class AnalyticsService {
    */
   async getExecutionLogs(filters?: AnalyticsFilters): Promise<ExecutionLog[]> {
     try {
+      logger.info('Getting execution logs', { filters })
       let query = 'SELECT * FROM execution_logs WHERE 1=1'
       const params: unknown[] = []
 
@@ -296,7 +401,40 @@ export class AnalyticsService {
 
       query += ' ORDER BY started_at DESC'
 
-      const logs = this.db.all<ExecutionLog>(query, params)
+      // Add limit if provided
+      if (filters && 'limit' in filters && typeof (filters as any).limit === 'number') {
+        query += ' LIMIT ?'
+        params.push((filters as any).limit)
+      }
+
+      const rows = this.db.all<any>(query, params)
+      logger.info('Execution logs retrieved from DB', { count: rows.length, query, params })
+
+      // Convert snake_case to camelCase
+      const logs: ExecutionLog[] = rows.map((row) => ({
+        id: row.id,
+        spaceId: row.space_id,
+        spaceName: row.space_name,
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        durationMs: row.duration_ms,
+        success: Boolean(row.success),
+        errorMessage: row.error_message,
+        resourcesTotal: row.resources_total,
+        resourcesSuccess: row.resources_success,
+        resourcesFailed: row.resources_failed,
+        createdAt: row.created_at
+      }))
+
+      logger.info('Execution logs converted to camelCase', {
+        count: logs.length,
+        firstLog: logs[0] ? {
+          id: logs[0].id,
+          spaceName: logs[0].spaceName,
+          spaceId: logs[0].spaceId
+        } : null
+      })
+
       return logs
     } catch (error) {
       logger.error('Failed to get execution logs', error)
@@ -318,11 +456,68 @@ export class AnalyticsService {
   }
 
   /**
-   * Get recent trends (last 30 days)
+   * Get recent trends
    */
-  async getRecentTrends(): Promise<RecentTrend[]> {
+  async getRecentTrends(days: number = 30): Promise<RecentTrend[]> {
     try {
-      const trends = this.db.all<RecentTrend>('SELECT * FROM v_recent_trends')
+      logger.info('Getting recent trends', { days })
+
+      // Calculate date range in YYYYMMDD format
+      const endDate = new Date()
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+
+      const endDateInt = parseInt(
+        `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`
+      )
+      const startDateInt = parseInt(
+        `${startDate.getFullYear()}${String(startDate.getMonth() + 1).padStart(2, '0')}${String(startDate.getDate()).padStart(2, '0')}`
+      )
+
+      // Query daily_metrics directly with date range
+      const rows = this.db.all<any>(
+        `
+        SELECT
+          date,
+          SUM(execution_count) as total_executions,
+          SUM(success_count) as total_success,
+          SUM(failure_count) as total_failures,
+          ROUND(AVG(avg_duration_ms), 2) as avg_duration,
+          COUNT(DISTINCT space_id) as active_spaces,
+          ROUND(CAST(SUM(success_count) AS REAL) / SUM(execution_count) * 100, 2) as success_rate_percent
+        FROM daily_metrics
+        WHERE date >= ? AND date <= ?
+        GROUP BY date
+        ORDER BY date ASC
+      `,
+        [startDateInt, endDateInt]
+      )
+
+      logger.info('Recent trends retrieved', {
+        count: rows.length,
+        startDateInt,
+        endDateInt,
+        firstRow: rows[0],
+        lastRow: rows[rows.length - 1]
+      })
+
+      // Convert snake_case to camelCase
+      const trends: RecentTrend[] = rows.map((row) => ({
+        date: row.date,
+        totalExecutions: row.total_executions || 0,
+        totalSuccess: row.total_success || 0,
+        totalFailures: row.total_failures || 0,
+        avgDuration: row.avg_duration || 0,
+        activeSpaces: row.active_spaces || 0,
+        successRatePercent: row.success_rate_percent || 0
+      }))
+
+      logger.info('Trends converted to camelCase', {
+        count: trends.length,
+        firstTrend: trends[0],
+        lastTrend: trends[trends.length - 1]
+      })
+
       return trends
     } catch (error) {
       logger.error('Failed to get recent trends', error)
@@ -405,6 +600,13 @@ export class AnalyticsService {
    */
   async getAnalyticsStats(dateRange?: DateRange): Promise<Result<AnalyticsStats>> {
     try {
+      // Get total spaces and tasks from repositories
+      const spaces = await this.spaceRepository.findAll()
+      const tasks = await this.taskRepository.findAll()
+      const totalSpaces = spaces.length
+      const totalTasks = tasks.length
+
+      // Get execution logs
       let query = 'SELECT * FROM execution_logs WHERE 1=1'
       const params: unknown[] = []
 
@@ -413,7 +615,23 @@ export class AnalyticsService {
         params.push(dateRange.start, dateRange.end)
       }
 
-      const logs = this.db.all<ExecutionLog>(query, params)
+      const rows = this.db.all<any>(query, params)
+
+      // Convert snake_case to camelCase
+      const logs: ExecutionLog[] = rows.map((row) => ({
+        id: row.id,
+        spaceId: row.space_id,
+        spaceName: row.space_name,
+        startedAt: row.started_at,
+        completedAt: row.completed_at,
+        durationMs: row.duration_ms,
+        success: Boolean(row.success),
+        errorMessage: row.error_message,
+        resourcesTotal: row.resources_total,
+        resourcesSuccess: row.resources_success,
+        resourcesFailed: row.resources_failed,
+        createdAt: row.created_at
+      }))
 
       const totalExecutions = logs.length
       const successfulExecutions = logs.filter((l) => l.success).length
@@ -423,6 +641,30 @@ export class AnalyticsService {
       const durations = logs.filter((l) => l.durationMs).map((l) => l.durationMs!)
       const totalDurationMs = durations.reduce((sum, d) => sum + d, 0)
       const avgDurationMs = durations.length > 0 ? totalDurationMs / durations.length : 0
+
+      // Calculate execution trend (compare current period vs previous period)
+      let executionTrend: { value: number; direction: 'up' | 'down' } | undefined
+      if (dateRange) {
+        const periodDuration = dateRange.end - dateRange.start
+        const previousStart = dateRange.start - periodDuration
+        const previousEnd = dateRange.start
+
+        const previousRows = this.db.all<any>(
+          'SELECT * FROM execution_logs WHERE started_at >= ? AND started_at < ?',
+          [previousStart, previousEnd]
+        )
+
+        const previousCount = previousRows.length
+        if (previousCount > 0) {
+          const trendValue = Math.round(
+            ((totalExecutions - previousCount) / previousCount) * 100
+          )
+          executionTrend = {
+            value: Math.abs(trendValue),
+            direction: trendValue >= 0 ? 'up' : 'down'
+          }
+        }
+      }
 
       // Most used space
       const spaceCounts = new Map<string, { name: string; count: number }>()
@@ -463,12 +705,15 @@ export class AnalyticsService {
           : null
 
       const stats: AnalyticsStats = {
+        totalSpaces,
+        totalTasks,
         totalExecutions,
         successfulExecutions,
         failedExecutions,
         successRate: Math.round(successRate * 100) / 100,
         avgDurationMs: Math.round(avgDurationMs),
         totalDurationMs,
+        executionTrend,
         mostUsedSpace,
         mostFailedResource
       }
@@ -519,6 +764,10 @@ export class AnalyticsService {
 /**
  * Factory function to create AnalyticsService instance
  */
-export function createAnalyticsService(db: SQLiteService): AnalyticsService {
-  return new AnalyticsService(db)
+export function createAnalyticsService(
+  db: SQLiteService,
+  spaceRepository: SpaceRepository,
+  taskRepository: TaskRepository
+): AnalyticsService {
+  return new AnalyticsService(db, spaceRepository, taskRepository)
 }

@@ -40,7 +40,7 @@ declare global {
       // Analytics (Phase 3 Sprint 3.2)
       analytics: {
         getSpaceUsage: () => Promise<Result<any[]>>
-        getRecentTrends: () => Promise<Result<any[]>>
+        getRecentTrends: (days?: number) => Promise<Result<any[]>>
         getTopErrors: () => Promise<Result<any[]>>
         getResourcePerformance: () => Promise<Result<any[]>>
         getStats: (dateRange?: any) => Promise<Result<any>>

@@ -203,12 +203,22 @@ export interface DateRange {
  * Analytics Stats Summary
  */
 export interface AnalyticsStats {
+  // Overall counts
+  totalSpaces: number
+  totalTasks: number
   totalExecutions: number
+  // Execution stats
   successfulExecutions: number
   failedExecutions: number
   successRate: number
   avgDurationMs: number
   totalDurationMs: number
+  // Trends
+  executionTrend?: {
+    value: number
+    direction: 'up' | 'down'
+  }
+  // Most used/failed
   mostUsedSpace: {
     spaceId: string
     spaceName: string

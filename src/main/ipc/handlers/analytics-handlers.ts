@@ -8,7 +8,10 @@ import { ipcMain, createSuccessResult, createErrorResult } from '../ipc-main'
 import { IPC_CHANNELS } from '../../../shared/types/ipc.types'
 import { Result } from '../../../shared/types/common.types'
 import { getSQLiteService } from '../../services/SQLiteService'
+import { getFileSystemService } from '../../services/FileSystemService'
 import { createAnalyticsService } from '../../../modules/analytics/services/AnalyticsService'
+import { SpaceRepository } from '../../../modules/workspace/repositories/SpaceRepository'
+import { TaskRepository } from '../../../modules/tasks/repositories/TaskRepository'
 import { logger } from '../../../shared/utils/logger'
 import type {
   SpaceUsageSummary,
@@ -25,7 +28,10 @@ import type {
  * Initialize services
  */
 const sqliteService = getSQLiteService()
-const analyticsService = createAnalyticsService(sqliteService)
+const fileSystemService = getFileSystemService()
+const spaceRepository = new SpaceRepository(fileSystemService)
+const taskRepository = new TaskRepository(fileSystemService)
+const analyticsService = createAnalyticsService(sqliteService, spaceRepository, taskRepository)
 
 /**
  * Register all analytics-related IPC handlers
@@ -46,9 +52,9 @@ export function registerAnalyticsHandlers(): void {
   // GET Recent Trends
   ipcMain.handle(
     IPC_CHANNELS.ANALYTICS_RECENT_TRENDS,
-    async (): Promise<Result<RecentTrend[]>> => {
-      logger.debug('Handling ANALYTICS_RECENT_TRENDS')
-      const trends = await analyticsService.getRecentTrends()
+    async (_event, days?: number): Promise<Result<RecentTrend[]>> => {
+      logger.debug('Handling ANALYTICS_RECENT_TRENDS', { days })
+      const trends = await analyticsService.getRecentTrends(days)
       return createSuccessResult(trends)
     }
   )

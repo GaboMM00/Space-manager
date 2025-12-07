@@ -8,7 +8,7 @@ import Database from 'better-sqlite3'
 import { join } from 'path'
 import { app } from 'electron'
 import { logger } from '../../shared/utils/logger'
-import { readFileSync } from 'fs'
+import { ANALYTICS_SCHEMA } from '../schemas/analytics.schema'
 
 /**
  * SQLite Service class
@@ -105,12 +105,8 @@ export class SQLiteService {
         return
       }
 
-      // Load and execute schema from file
-      const schemaPath = join(__dirname, '../../..', 'docs', 'SQLITE_SCHEMA.sql')
-      const schema = readFileSync(schemaPath, 'utf-8')
-
-      // Execute schema (split by statements)
-      this.db.exec(schema)
+      // Execute schema from imported constant
+      this.db.exec(ANALYTICS_SCHEMA)
 
       logger.info('Database schema initialized successfully')
     } catch (error) {

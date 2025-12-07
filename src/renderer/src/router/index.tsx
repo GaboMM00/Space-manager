@@ -10,6 +10,7 @@ import { DashboardView } from '../views/Dashboard/DashboardView'
 import { SpaceEditorView } from '../views/SpaceEditor/SpaceEditorView'
 import { SettingsView } from '../views/Settings/SettingsView'
 import { TasksView } from '../views/Tasks/TasksView'
+import { AnalyticsView } from '../views/Analytics/AnalyticsView'
 
 /**
  * Application router configuration
@@ -39,6 +40,10 @@ export const router = createHashRouter([
       {
         path: 'tasks',
         element: <TasksView />
+      },
+      {
+        path: 'analytics',
+        element: <AnalyticsView />
       },
       {
         path: 'settings',

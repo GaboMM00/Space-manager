@@ -35,7 +35,7 @@ const api = {
   // Analytics (Phase 3 Sprint 3.2)
   analytics: {
     getSpaceUsage: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_SPACE_USAGE),
-    getRecentTrends: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RECENT_TRENDS),
+    getRecentTrends: (days?: number) => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RECENT_TRENDS, days),
     getTopErrors: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_TOP_ERRORS),
     getResourcePerformance: () => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_RESOURCE_PERFORMANCE),
     getStats: (dateRange?: any) => ipcRenderer.invoke(IPC_CHANNELS.ANALYTICS_STATS, dateRange),
