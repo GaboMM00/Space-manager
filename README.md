@@ -19,7 +19,7 @@ Sistema Modular de Gestión de Espacios de Trabajo Digitales
 
 ```bash
 # Clonar el repositorio (cuando esté en GitHub)
-git clone <url-del-repo>
+git clone https://github.com/GaboMM00/Space-manager
 cd Space-Manager
 
 # Instalar dependencias
