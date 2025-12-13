@@ -23,8 +23,8 @@ asarUnpack:
 # Build metadata
 publish:
   provider: github
-  owner: space-manager
-  repo: space-manager
+  owner: GaboMM00
+  repo: Space-manager
 
 # Windows configuration
 win:
