@@ -20,7 +20,10 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        # Temporarily only building for Linux to avoid runner availability issues
+        # Uncomment Windows and macOS when needed:
+        # os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [ubuntu-latest]
 
     steps:
       # Checkout code
