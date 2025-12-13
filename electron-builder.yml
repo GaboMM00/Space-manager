@@ -36,7 +36,7 @@ win:
     - target: portable
       arch:
         - x64
-  icon: resources/icons/icon.ico
+  # icon: resources/icons/icon.ico  # Commented out - will use default Electron icon
   publisherName: Space Manager Team
   verifyUpdateCodeSignature: false
 
@@ -48,8 +48,8 @@ nsis:
   createDesktopShortcut: always
   createStartMenuShortcut: true
   shortcutName: Space Manager
-  installerIcon: resources/icons/installer.ico
-  uninstallerIcon: resources/icons/uninstaller.ico
+  # installerIcon: resources/icons/installer.ico  # Commented out - will use default
+  # uninstallerIcon: resources/icons/uninstaller.ico  # Commented out - will use default
   license: LICENSE
   language: 1033
 
@@ -68,15 +68,15 @@ mac:
         - x64
         - arm64
   category: public.app-category.productivity
-  icon: resources/icons/icon.icns
+  # icon: resources/icons/icon.icns  # Commented out - will use default Electron icon
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: resources/entitlements.mac.plist
   entitlementsInherit: resources/entitlements.mac.plist
 
 dmg:
-  background: resources/installer/background.png
-  icon: resources/icons/icon.icns
+  # background: resources/installer/background.png  # Commented out - will use default
+  # icon: resources/icons/icon.icns  # Commented out - will use default
   iconSize: 100
   contents:
     - x: 410
@@ -105,7 +105,7 @@ linux:
       arch:
         - x64
         - arm64
-  icon: resources/icons/icon.png
+  # icon: resources/icons/icon.png  # Commented out - will use default Electron icon
   category: Utility
   synopsis: Sistema Modular de Gestión de Espacios de Trabajo Digitales
   description: >
