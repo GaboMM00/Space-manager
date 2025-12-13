@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase 6 Sprint 6.1 (Packaging & Distribution) - 2025-12-12
+
+**Electron Builder Configuration:**
+- Created `electron-builder.yml` with comprehensive build configuration
+- Configured installers for Windows (NSIS, Portable), macOS (DMG, ZIP), and Linux (AppImage, DEB, RPM)
+- Added code signing support for macOS with entitlements
+- Configured auto-updater integration with GitHub Releases
+
+**Auto-Updater Implementation:**
+- Created `AutoUpdaterService.ts` for automatic application updates
+- Integrated `electron-updater` for seamless update delivery
+- Added IPC handlers for update management: check, download, install
+- Implemented user prompts for update installation
+- Auto-check for updates on app startup (production only)
+
+**GitHub Actions Workflows:**
+- Created `release.yml` workflow for automated multi-platform builds
+- Created `ci.yml` workflow for continuous integration testing
+- Configured automatic release creation on version tags
+- Set up artifact uploads for debugging
+
+**Distribution Assets:**
+- Created resource directories structure (`resources/icons`, `resources/installer`)
+- Added macOS entitlements for proper code signing
+- Created notarization script for macOS builds
+- Added LICENSE file (ISC License)
+
+**IPC Integration:**
+- Added update-related IPC channels: `UPDATER_CHECK_FOR_UPDATES`, `UPDATER_DOWNLOAD_UPDATE`, `UPDATER_QUIT_AND_INSTALL`
+- Added update event listeners: `UPDATE_AVAILABLE`, `UPDATE_DOWNLOADED`, `UPDATE_PROGRESS`, etc.
+- Type-safe IPC communication for all updater operations
+
+**New Scripts:**
+- `build:win` - Build Windows installers
+- `build:mac` - Build macOS installers
+- `build:linux` - Build Linux installers
+- `build:unpack` - Build unpacked directory for testing
+
+**Dependencies Added:**
+- `electron-updater` - For automatic application updates
+
+**Documentation:**
+- Created `resources/README.md` with icon requirements and guidelines
+- Updated package.json with distribution scripts
+
+**Benefits:**
+- ✅ Multi-platform installers (Windows, macOS, Linux)
+- ✅ Automatic updates via GitHub Releases
+- ✅ Automated CI/CD with GitHub Actions
+- ✅ Professional packaging with proper code signing
+- ✅ User-friendly update notifications
+- ✅ Zero-downtime updates with auto-install on quit
+
 ### Added - Phase 5 Sprints 5.5.2 & 5.5.3 (Services Refactoring & Testing) - 2025-12-12
 
 **Sprint 5.5.2 - Services Refactoring:**

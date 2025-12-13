@@ -7,7 +7,12 @@ import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
 import { registerExecutionHandlers } from './ipc/handlers/execution-handlers'
 import { registerTaskHandlers } from './ipc/handlers/task-handlers'
 import { registerAnalyticsHandlers } from './ipc/handlers/analytics-handlers'
+import { registerUpdaterHandlers, setAutoUpdaterService } from './ipc/handlers/updater-handlers'
 import { closeSQLiteConnection } from './services/SQLiteService'
+import { createAutoUpdaterService, AutoUpdaterService } from './services/AutoUpdaterService'
+
+// Global reference to auto-updater service
+let autoUpdaterService: AutoUpdaterService | null = null
 
 /**
  * Initialize DI Container and IPC handlers
@@ -36,11 +41,14 @@ function initializeApplication(): void {
   // Register analytics handlers (Sprint 3.2)
   registerAnalyticsHandlers()
 
+  // Register auto-updater handlers (Sprint 6.1)
+  registerUpdaterHandlers()
+
   logger.info('IPC handlers initialized successfully')
   logger.info('Application initialized successfully')
 }
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   logger.info('Creating main window...')
 
   // Create the browser window.
@@ -80,6 +88,19 @@ function createWindow(): void {
     mainWindow.webContents.openDevTools()
     logger.debug('DevTools opened')
   }
+
+  // Initialize auto-updater (only in production)
+  if (process.env.NODE_ENV !== 'development') {
+    autoUpdaterService = createAutoUpdaterService(mainWindow)
+    // Set service instance for IPC handlers
+    setAutoUpdaterService(autoUpdaterService)
+    // Check for updates on app startup
+    autoUpdaterService.checkForUpdates().catch((error) => {
+      logger.error('Failed to check for updates on startup:', error)
+    })
+  }
+
+  return mainWindow
 }
 
 // This method will be called when Electron has finished

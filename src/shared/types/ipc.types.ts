@@ -86,7 +86,12 @@ export const IPC_CHANNELS = {
 
   // System
   SYSTEM_INFO: 'system:info',
-  SYSTEM_PING: 'system:ping'
+  SYSTEM_PING: 'system:ping',
+
+  // Auto-Updater
+  UPDATER_CHECK_FOR_UPDATES: 'updater:checkForUpdates',
+  UPDATER_DOWNLOAD_UPDATE: 'updater:downloadUpdate',
+  UPDATER_QUIT_AND_INSTALL: 'updater:quitAndInstall'
 } as const
 
 /**
@@ -98,7 +103,14 @@ export const IPC_EVENTS = {
   EXECUTION_ERROR: 'execution:error',
   SPACE_UPDATED: 'space:updated',
   TASK_UPDATED: 'task:updated',
-  METRICS_UPDATED: 'metrics:updated'
+  METRICS_UPDATED: 'metrics:updated',
+  // Auto-Updater events
+  UPDATE_AVAILABLE: 'update-available',
+  UPDATE_NOT_AVAILABLE: 'update-not-available',
+  UPDATE_DOWNLOAD_PROGRESS: 'update-download-progress',
+  UPDATE_DOWNLOADED: 'update-downloaded',
+  UPDATE_ERROR: 'update-error',
+  UPDATE_STATUS: 'update-status'
 } as const
 
 /**
@@ -239,6 +251,20 @@ export interface IPCInvokeMap {
   [IPC_CHANNELS.SYSTEM_PING]: {
     args: []
     return: Result<{ pong: boolean; timestamp: number }>
+  }
+
+  // Auto-Updater
+  [IPC_CHANNELS.UPDATER_CHECK_FOR_UPDATES]: {
+    args: []
+    return: Result<void>
+  }
+  [IPC_CHANNELS.UPDATER_DOWNLOAD_UPDATE]: {
+    args: []
+    return: Result<void>
+  }
+  [IPC_CHANNELS.UPDATER_QUIT_AND_INSTALL]: {
+    args: []
+    return: Result<void>
   }
 }
 

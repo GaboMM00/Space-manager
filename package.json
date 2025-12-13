@@ -33,6 +33,7 @@
     "better-sqlite3": "^11.10.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "electron-updater": "^6.6.2",
     "framer-motion": "^12.23.25",
     "react-day-picker": "^9.11.3",
     "react-hot-toast": "^2.6.0",
