@@ -5,28 +5,36 @@
  */
 
 import type { Result } from '../../../shared/types/common.types'
-import type { Space, SpaceFilters, CreateSpaceInput, UpdateSpaceInput } from '../types/workspace.types'
+import type {
+  Space,
+  CreateSpaceDto,
+  UpdateSpaceDto,
+  SpaceSearchFilters,
+  SpaceSortOptions,
+  SpaceStats,
+  SpaceExport
+} from '../types/workspace.types'
 
 export interface ISpaceService {
   /**
-   * List all spaces with optional filters
+   * Get all spaces with optional sorting
    */
-  listSpaces(filters?: SpaceFilters): Promise<Result<Space[]>>
+  getAllSpaces(sortOptions?: SpaceSortOptions): Promise<Space[]>
 
   /**
    * Get space by ID
    */
-  getSpace(id: string): Promise<Result<Space>>
+  getSpaceById(id: string): Promise<Result<Space>>
 
   /**
    * Create new space
    */
-  createSpace(input: CreateSpaceInput): Promise<Result<Space>>
+  createSpace(data: CreateSpaceDto): Promise<Result<Space>>
 
   /**
    * Update existing space
    */
-  updateSpace(id: string, input: UpdateSpaceInput): Promise<Result<Space>>
+  updateSpace(id: string, updates: UpdateSpaceDto): Promise<Result<Space>>
 
   /**
    * Delete space
@@ -39,22 +47,32 @@ export interface ISpaceService {
   duplicateSpace(id: string, newName?: string): Promise<Result<Space>>
 
   /**
-   * Search spaces
+   * Search spaces with filters
    */
-  searchSpaces(query: string): Promise<Result<Space[]>>
-
-  /**
-   * Export space
-   */
-  exportSpace(id: string): Promise<Result<string>>
-
-  /**
-   * Import space
-   */
-  importSpace(data: string): Promise<Result<Space>>
+  searchSpaces(filters: SpaceSearchFilters): Promise<Space[]>
 
   /**
    * Get space statistics
    */
-  getSpaceStats(id: string): Promise<Result<any>>
+  getStatistics(): Promise<SpaceStats>
+
+  /**
+   * Export space
+   */
+  exportSpace(id: string): Promise<Result<SpaceExport>>
+
+  /**
+   * Import space
+   */
+  importSpace(exportData: SpaceExport): Promise<Result<Space>>
+
+  /**
+   * Add resource to space
+   */
+  addResource(spaceId: string, resource: any): Promise<Result<Space>>
+
+  /**
+   * Get all tags
+   */
+  getAllTags(): Promise<string[]>
 }

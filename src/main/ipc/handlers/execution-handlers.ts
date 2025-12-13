@@ -2,6 +2,7 @@
  * Execution IPC Handlers
  * Handles IPC communication for space execution
  * Phase 1 Sprint 1.4 - Execution Engine
+ * Updated Phase 5.5 Sprint 5.5.2 - Using DI Container
  */
 
 import { ipcMain, createSuccessResult, createErrorResult } from '../ipc-main'
@@ -9,28 +10,37 @@ import { IPC_CHANNELS } from '../../../shared/types/ipc.types'
 import { Result } from '../../../shared/types/common.types'
 import { ExecutionResult } from '../../../modules/execution/types/execution.types'
 import { ExecutionOrchestrator } from '../../../modules/execution/services/ExecutionOrchestrator'
-import { getFileSystemService } from '../../services/FileSystemService'
-import { createBackupService } from '../../services/BackupService'
-import { createEventBus } from '../../../shared/utils/event-bus'
-import { createSpaceService } from '../../../modules/workspace/services/SpaceService'
-import { getSQLiteService } from '../../services/SQLiteService'
-import { createAnalyticsService } from '../../../modules/analytics/services/AnalyticsService'
-import { SpaceRepository } from '../../../modules/workspace/repositories/SpaceRepository'
-import { TaskRepository } from '../../../modules/tasks/repositories/TaskRepository'
+import { EventBus } from '../../../shared/utils/event-bus'
+import { AnalyticsService } from '../../../modules/analytics/services/AnalyticsService'
+import { SpaceService } from '../../../modules/workspace/services/SpaceService'
 import { logger } from '../../../shared/utils/logger'
+import { container, ServiceNames } from '../../../shared/di'
 
 /**
- * Initialize services
+ * Get services from DI container
+ * Note: Using concrete types since ExecutionOrchestrator expects specific classes
  */
-const fileSystem = getFileSystemService()
-const backupService = createBackupService(fileSystem)
-const eventBus = createEventBus()
-const sqliteService = getSQLiteService()
-const spaceRepository = new SpaceRepository(fileSystem)
-const taskRepository = new TaskRepository(fileSystem)
-const analyticsService = createAnalyticsService(sqliteService, spaceRepository, taskRepository)
-const spaceService = createSpaceService(fileSystem, backupService, eventBus)
-const orchestrator = new ExecutionOrchestrator(eventBus, analyticsService)
+function getSpaceService(): SpaceService {
+  return container().resolve<SpaceService>(ServiceNames.SPACE_SERVICE)
+}
+
+function getEventBus(): EventBus {
+  return container().resolve<EventBus>(ServiceNames.EVENT_BUS)
+}
+
+function getAnalyticsService(): AnalyticsService {
+  return container().resolve<AnalyticsService>(ServiceNames.ANALYTICS_SERVICE)
+}
+
+/**
+ * Initialize ExecutionOrchestrator with DI
+ * Note: ExecutionOrchestrator is created per request since it manages state
+ */
+function createOrchestrator(): ExecutionOrchestrator {
+  const eventBus = getEventBus()
+  const analyticsService = getAnalyticsService()
+  return new ExecutionOrchestrator(eventBus, analyticsService)
+}
 
 /**
  * Register execution IPC handlers
@@ -48,6 +58,7 @@ export function registerExecutionHandlers(): void {
         logger.info('Executing space', { spaceId })
 
         // Get the space
+        const spaceService = getSpaceService()
         const spaceResult = await spaceService.getSpaceById(spaceId)
         if (!spaceResult.success || !spaceResult.data) {
           return createErrorResult<ExecutionResult>(
@@ -59,6 +70,7 @@ export function registerExecutionHandlers(): void {
         const space = spaceResult.data
 
         // Execute the space
+        const orchestrator = createOrchestrator()
         const result = await orchestrator.executeSpace(space)
 
         return createSuccessResult(result)

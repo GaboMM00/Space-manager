@@ -1,6 +1,7 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { logger } from '../shared/utils/logger'
+import { initializeDIContainer } from './di/container-setup'
 import { registerSystemHandlers } from './ipc/handlers/system-handlers'
 import { registerWorkspaceHandlers } from './ipc/handlers/workspace-handlers'
 import { registerExecutionHandlers } from './ipc/handlers/execution-handlers'
@@ -9,9 +10,15 @@ import { registerAnalyticsHandlers } from './ipc/handlers/analytics-handlers'
 import { closeSQLiteConnection } from './services/SQLiteService'
 
 /**
- * Initialize IPC handlers
+ * Initialize DI Container and IPC handlers
  */
-function initializeIPC(): void {
+function initializeApplication(): void {
+  logger.info('Initializing application...')
+
+  // Initialize Dependency Injection Container (Sprint 5.5.2)
+  initializeDIContainer()
+
+  // Initialize IPC handlers
   logger.info('Initializing IPC handlers...')
 
   // Register system handlers
@@ -30,6 +37,7 @@ function initializeIPC(): void {
   registerAnalyticsHandlers()
 
   logger.info('IPC handlers initialized successfully')
+  logger.info('Application initialized successfully')
 }
 
 function createWindow(): void {
@@ -86,8 +94,8 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   app.setAppUserModelId('com.spacemanager')
 
-  // Initialize IPC communication
-  initializeIPC()
+  // Initialize application (DI Container + IPC)
+  initializeApplication()
 
   // Create main window
   createWindow()

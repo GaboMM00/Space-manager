@@ -1,25 +1,23 @@
 /**
  * Workspace IPC Handlers
  * Handles IPC communication for workspace module
+ * Updated Phase 5.5 Sprint 5.5.2 - Using DI Container
  */
 
 import { ipcMain, createSuccessResult, createErrorResult } from '../ipc-main'
 import { IPC_CHANNELS } from '../../../shared/types/ipc.types'
 import { Result } from '../../../shared/types/common.types'
 import { Space, SpaceExport } from '../../../modules/workspace/types/workspace.types'
-import { getFileSystemService } from '../../services/FileSystemService'
-import { createBackupService } from '../../services/BackupService'
-import { createEventBus } from '../../../shared/utils/event-bus'
-import { createSpaceService } from '../../../modules/workspace/services/SpaceService'
 import { logger } from '../../../shared/utils/logger'
+import { container, ServiceNames } from '../../../shared/di'
+import type { ISpaceService } from '../../../modules/workspace/interfaces'
 
 /**
- * Initialize services
+ * Get SpaceService from DI container
  */
-const fileSystem = getFileSystemService()
-const backupService = createBackupService(fileSystem)
-const eventBus = createEventBus()
-const spaceService = createSpaceService(fileSystem, backupService, eventBus)
+function getSpaceService(): ISpaceService {
+  return container().resolve<ISpaceService>(ServiceNames.SPACE_SERVICE)
+}
 
 /**
  * Register all workspace-related IPC handlers
@@ -30,6 +28,7 @@ export function registerWorkspaceHandlers(): void {
   // CREATE Space
   ipcMain.handle(IPC_CHANNELS.SPACES_CREATE, async (_event, data): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_CREATE', { name: data.name })
+    const spaceService = getSpaceService()
     const result = await spaceService.createSpace(data)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -40,6 +39,7 @@ export function registerWorkspaceHandlers(): void {
   // UPDATE Space
   ipcMain.handle(IPC_CHANNELS.SPACES_UPDATE, async (_event, id, updates): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_UPDATE', { id })
+    const spaceService = getSpaceService()
     const result = await spaceService.updateSpace(id, updates)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -50,6 +50,7 @@ export function registerWorkspaceHandlers(): void {
   // DELETE Space
   ipcMain.handle(IPC_CHANNELS.SPACES_DELETE, async (_event, id) => {
     logger.debug('Handling SPACES_DELETE', { id })
+    const spaceService = getSpaceService()
     const result = await spaceService.deleteSpace(id)
     if (result.success) {
       return createSuccessResult(undefined)
@@ -60,6 +61,7 @@ export function registerWorkspaceHandlers(): void {
   // GET Space by ID
   ipcMain.handle(IPC_CHANNELS.SPACES_GET, async (_event, id): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_GET', { id })
+    const spaceService = getSpaceService()
     const result = await spaceService.getSpaceById(id)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -70,6 +72,7 @@ export function registerWorkspaceHandlers(): void {
   // LIST Spaces
   ipcMain.handle(IPC_CHANNELS.SPACES_LIST, async (_event, sortOptions) => {
     logger.debug('Handling SPACES_LIST')
+    const spaceService = getSpaceService()
     const spaces = await spaceService.getAllSpaces(sortOptions)
     return createSuccessResult(spaces)
   })
@@ -77,6 +80,7 @@ export function registerWorkspaceHandlers(): void {
   // DUPLICATE Space
   ipcMain.handle(IPC_CHANNELS.SPACES_DUPLICATE, async (_event, id, newName): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_DUPLICATE', { id, newName })
+    const spaceService = getSpaceService()
     const result = await spaceService.duplicateSpace(id, newName)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -87,6 +91,7 @@ export function registerWorkspaceHandlers(): void {
   // SEARCH Spaces
   ipcMain.handle(IPC_CHANNELS.SPACES_SEARCH, async (_event, filters) => {
     logger.debug('Handling SPACES_SEARCH', { filters })
+    const spaceService = getSpaceService()
     const spaces = await spaceService.searchSpaces(filters)
     return createSuccessResult(spaces)
   })
@@ -94,6 +99,7 @@ export function registerWorkspaceHandlers(): void {
   // GET Statistics
   ipcMain.handle(IPC_CHANNELS.SPACES_STATS, async () => {
     logger.debug('Handling SPACES_STATS')
+    const spaceService = getSpaceService()
     const stats = await spaceService.getStatistics()
     return createSuccessResult(stats)
   })
@@ -101,6 +107,7 @@ export function registerWorkspaceHandlers(): void {
   // EXPORT Space
   ipcMain.handle(IPC_CHANNELS.SPACES_EXPORT, async (_event, id): Promise<Result<SpaceExport>> => {
     logger.debug('Handling SPACES_EXPORT', { id })
+    const spaceService = getSpaceService()
     const result = await spaceService.exportSpace(id)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -111,6 +118,7 @@ export function registerWorkspaceHandlers(): void {
   // IMPORT Space
   ipcMain.handle(IPC_CHANNELS.SPACES_IMPORT, async (_event, exportData): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_IMPORT')
+    const spaceService = getSpaceService()
     const result = await spaceService.importSpace(exportData)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -121,6 +129,7 @@ export function registerWorkspaceHandlers(): void {
   // ADD Resource to Space
   ipcMain.handle(IPC_CHANNELS.SPACES_ADD_RESOURCE, async (_event, spaceId, resource): Promise<Result<Space>> => {
     logger.debug('Handling SPACES_ADD_RESOURCE', { spaceId, resourceName: resource.name })
+    const spaceService = getSpaceService()
     const result = await spaceService.addResource(spaceId, resource)
     if (result.success && result.data) {
       return createSuccessResult(result.data)
@@ -131,6 +140,7 @@ export function registerWorkspaceHandlers(): void {
   // GET All Tags
   ipcMain.handle(IPC_CHANNELS.SPACES_GET_TAGS, async () => {
     logger.debug('Handling SPACES_GET_TAGS')
+    const spaceService = getSpaceService()
     const tags = await spaceService.getAllTags()
     return createSuccessResult(tags)
   })

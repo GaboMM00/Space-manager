@@ -5,28 +5,33 @@
  */
 
 import type { Result } from '../../../shared/types/common.types'
-import type { Space, SpaceFilters } from '../types/workspace.types'
+import type { Space } from '../types/workspace.types'
 
 export interface ISpaceRepository {
   /**
-   * Find all spaces with optional filters
+   * Find all spaces
    */
-  findAll(filters?: SpaceFilters): Promise<Result<Space[]>>
+  findAll(): Promise<Space[]>
+
+  /**
+   * Find all spaces sorted by field
+   */
+  findAllSorted(field: keyof Space, order: 'asc' | 'desc'): Promise<Space[]>
 
   /**
    * Find space by ID
    */
-  findById(id: string): Promise<Result<Space | null>>
+  findById(id: string): Promise<Space | null>
 
   /**
    * Create new space
    */
-  create(space: Space): Promise<Result<Space>>
+  create(space: any): Promise<Result<Space>>
 
   /**
    * Update existing space
    */
-  update(id: string, space: Partial<Space>): Promise<Result<Space>>
+  update(id: string, space: Partial<any>): Promise<Result<Space>>
 
   /**
    * Delete space
@@ -37,4 +42,14 @@ export interface ISpaceRepository {
    * Check if space exists
    */
   exists(id: string): Promise<boolean>
+
+  /**
+   * Check if name exists
+   */
+  nameExists(name: string, excludeId?: string): Promise<boolean>
+
+  /**
+   * Get all unique tags
+   */
+  getAllTags(): Promise<string[]>
 }

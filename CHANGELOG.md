@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase 5 Sprints 5.5.2 & 5.5.3 (Services Refactoring & Testing) - 2025-12-12
+
+**Sprint 5.5.2 - Services Refactoring:**
+- Refactored all IPC handlers to use DI container for service resolution
+- Created `src/main/di/container-setup.ts` to initialize all services at app startup
+- Updated `src/main/index.ts` to call `initializeDIContainer()` before IPC registration
+- Migrated TaskService, SpaceService, AnalyticsService, and ExecutionOrchestrator to DI pattern
+
+**IPC Handlers Refactored:**
+- `src/main/ipc/handlers/task-handlers.ts` - Resolves TaskService from container
+- `src/main/ipc/handlers/workspace-handlers.ts` - Resolves SpaceService from container
+- `src/main/ipc/handlers/analytics-handlers.ts` - Resolves AnalyticsService from container
+- `src/main/ipc/handlers/execution-handlers.ts` - Creates ExecutionOrchestrator with injected dependencies
+
+**DI Container Setup:**
+- Registers all services as singletons: Logger, EventBus, FileSystemService, SQLiteService
+- Registers repositories: SpaceRepository, TaskRepository
+- Registers services: SpaceService, TaskService, AnalyticsService
+- Type-safe service resolution using ServiceNames constants
+
+**Sprint 5.5.3 - Testing Suite (Partial):**
+- Created `tests/unit/services/TaskService.test.ts` demonstrating DI pattern with mocks
+- Shows how to inject mock dependencies for unit testing
+- Template for creating additional unit tests with constructor injection
+
+**Benefits:**
+- ✅ Centralized dependency management
+- ✅ All services now mockable for unit testing
+- ✅ No breaking changes - existing code works unchanged
+- ✅ TypeScript compilation passes
+- ✅ Build successful
+- ✅ Better testability and maintainability
+
 ### Added - Phase 5 Sprint 5.5.1 (Dependency Injection Infrastructure) - 2025-12-12
 
 **Dependency Injection Infrastructure:**

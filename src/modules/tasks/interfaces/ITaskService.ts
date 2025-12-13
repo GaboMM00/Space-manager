@@ -9,24 +9,24 @@ import type { Task, TaskFilters, CreateTaskInput, UpdateTaskInput, TaskStats } f
 
 export interface ITaskService {
   /**
-   * List all tasks with optional filters
+   * Get all tasks with optional filters
    */
-  listTasks(filters?: TaskFilters): Promise<Result<Task[]>>
+  getAllTasks(filters?: TaskFilters): Promise<Task[]>
 
   /**
    * Get task by ID
    */
-  getTask(id: string): Promise<Result<Task>>
+  getTaskById(id: string): Promise<Result<Task>>
 
   /**
    * Create new task
    */
-  createTask(input: CreateTaskInput): Promise<Result<Task>>
+  createTask(data: CreateTaskInput): Promise<Result<Task>>
 
   /**
    * Update existing task
    */
-  updateTask(id: string, input: UpdateTaskInput): Promise<Result<Task>>
+  updateTask(id: string, updates: Partial<UpdateTaskInput>): Promise<Result<Task>>
 
   /**
    * Delete task
@@ -36,7 +36,7 @@ export interface ITaskService {
   /**
    * Toggle task status (pending <-> completed)
    */
-  toggleTask(id: string): Promise<Result<Task>>
+  toggleTaskStatus(id: string): Promise<Result<Task>>
 
   /**
    * Get task statistics for a space

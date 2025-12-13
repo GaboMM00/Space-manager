@@ -53,39 +53,39 @@ export interface IAnalyticsService {
   ): Promise<Result<void>>
 
   /**
-   * Get execution logs with filters
+   * Get execution logs with filters (returns array directly, not wrapped in Result)
    */
-  getExecutionLogs(filters?: AnalyticsFilters): Promise<Result<ExecutionLog[]>>
+  getExecutionLogs(filters?: AnalyticsFilters): Promise<ExecutionLog[]>
 
   /**
-   * Get space usage summary
+   * Get space usage summary (returns array directly, not wrapped in Result)
    */
-  getSpaceUsageSummary(): Promise<Result<SpaceUsageSummary[]>>
+  getSpaceUsageSummary(): Promise<SpaceUsageSummary[]>
 
   /**
-   * Get recent trends
+   * Get recent trends (returns array directly, not wrapped in Result)
    */
-  getRecentTrends(days?: number): Promise<Result<RecentTrend[]>>
+  getRecentTrends(days?: number): Promise<RecentTrend[]>
 
   /**
-   * Get top errors
+   * Get top errors (returns array directly, not wrapped in Result)
    */
-  getTopErrors(days?: number): Promise<Result<TopError[]>>
+  getTopErrors(days?: number): Promise<TopError[]>
 
   /**
-   * Get resource performance
+   * Get resource performance (returns array directly, not wrapped in Result)
    */
-  getResourcePerformance(): Promise<Result<ResourcePerformance[]>>
+  getResourcePerformance(): Promise<ResourcePerformance[]>
 
   /**
-   * Get daily metrics for a space
+   * Get daily metrics for a space (returns array directly, not wrapped in Result)
    */
-  getDailyMetrics(spaceId: string, days?: number): Promise<Result<DailyMetric[]>>
+  getDailyMetrics(spaceId: string, days?: number): Promise<DailyMetric[]>
 
   /**
-   * Get resource stats for a space
+   * Get resource stats for a space (returns array directly, not wrapped in Result)
    */
-  getResourceStats(spaceId: string): Promise<Result<ResourceStat[]>>
+  getResourceStats(spaceId: string): Promise<ResourceStat[]>
 
   /**
    * Get analytics stats summary
