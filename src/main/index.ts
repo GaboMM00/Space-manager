@@ -51,6 +51,12 @@ function initializeApplication(): void {
 function createWindow(): BrowserWindow {
   logger.info('Creating main window...')
 
+  // Verify preload script path
+  const preloadPath = join(__dirname, '../preload/index.js')
+  const fs = require('fs')
+  const preloadExists = fs.existsSync(preloadPath)
+  logger.info('Preload script path', { preloadPath, exists: preloadExists })
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -58,7 +64,7 @@ function createWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: preloadPath,
       sandbox: false,
       contextIsolation: true
     }
@@ -83,8 +89,31 @@ function createWindow(): BrowserWindow {
     logger.debug('Loaded production HTML file')
   }
 
-  // Open DevTools in development
-  if (process.env.NODE_ENV === 'development') {
+  // Add error listeners to diagnose issues
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    logger.error('Failed to load renderer', { errorCode, errorDescription })
+  })
+
+  mainWindow.webContents.on('render-process-gone', (_event, details) => {
+    logger.error('Renderer process gone', { details })
+  })
+
+  mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+    logger.info('Renderer console', { level, message, line, sourceId })
+  })
+
+  // Log when the page finishes loading
+  mainWindow.webContents.on('did-finish-load', () => {
+    logger.info('Renderer finished loading')
+  })
+
+  // Log when the window is ready to show
+  mainWindow.once('ready-to-show', () => {
+    logger.info('Window ready to show')
+  })
+
+  // Open DevTools in development AND temporarily in production for debugging
+  if (process.env.NODE_ENV === 'development' || true) {
     mainWindow.webContents.openDevTools()
     logger.debug('DevTools opened')
   }
