@@ -112,8 +112,8 @@ function createWindow(): BrowserWindow {
     logger.info('Window ready to show')
   })
 
-  // Open DevTools in development AND temporarily in production for debugging
-  if (process.env.NODE_ENV === 'development' || true) {
+  // Open DevTools only in development
+  if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools()
     logger.debug('DevTools opened')
   }
