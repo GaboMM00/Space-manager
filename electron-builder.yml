@@ -7,7 +7,7 @@ copyright: Copyright © 2025 ${author}
 
 # Directories
 directories:
-  buildResources: resources
+  buildResources: build  # Changed from 'resources' to avoid icon errors
   output: dist
 
 # Files to include in the app package
@@ -124,7 +124,7 @@ deb:
     - libnss3
 
 # Auto-updater configuration
-afterSign: scripts/notarize.js
+# afterSign: scripts/notarize.js  # Commented out - only needed for macOS code signing
 
 # Compression settings
 compression: maximum
