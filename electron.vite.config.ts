@@ -29,23 +29,6 @@ export default defineConfig({
     plugins: [react()],
     build: {
       minify: 'esbuild',
-      rollupOptions: {
-        output: {
-          manualChunks(id): string | undefined {
-            // Separate vendor chunks for better caching
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'vendor-react'
-              }
-              if (id.includes('react-router')) {
-                return 'vendor-router'
-              }
-              return 'vendor'
-            }
-            return undefined
-          }
-        }
-      },
       chunkSizeWarningLimit: 600
     }
   }
