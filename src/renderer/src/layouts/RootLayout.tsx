@@ -114,7 +114,7 @@ export const RootLayout: React.FC = () => {
           </div>
           <div>
             <h2 className="font-semibold text-gray-900 dark:text-white">Space Manager</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">v1.0.0</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">v1.0.5</p>
           </div>
         </div>
       }

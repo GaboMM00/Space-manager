@@ -36,7 +36,7 @@ win:
     - target: portable
       arch:
         - x64
-  # icon: resources/icons/icon.ico  # Commented out - will use default Electron icon
+  icon: resources/icons/icon.ico
   publisherName: Space Manager Team
   verifyUpdateCodeSignature: false
 
@@ -68,7 +68,7 @@ mac:
         - x64
         - arm64
   category: public.app-category.productivity
-  # icon: resources/icons/icon.icns  # Commented out - will use default Electron icon
+  icon: resources/icons/icon.icns
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: resources/entitlements.mac.plist
@@ -105,7 +105,7 @@ linux:
       arch:
         - x64
         - arm64
-  # icon: resources/icons/icon.png  # Commented out - will use default Electron icon
+  icon: resources/icons/icon.png
   category: Utility
   synopsis: Sistema Modular de Gestión de Espacios de Trabajo Digitales
   description: >
